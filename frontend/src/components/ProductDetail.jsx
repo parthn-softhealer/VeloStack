@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { PhotoIcon, InfoIcon, StarIcon } from "./Icons.jsx";
 
 function fmt(n) {
@@ -7,11 +6,6 @@ function fmt(n) {
 }
 
 export default function ProductDetail({ item, onBack }) {
-  const [sourcingCost, setSourcingCost] = useState(
-    item ? Math.round((item.price || 500) * 0.35) : 200
-  );
-  const [shippingCost, setShippingCost] = useState(80);
-
   if (!item) {
     return (
       <section className="detail-container">
@@ -26,13 +20,6 @@ export default function ProductDetail({ item, onBack }) {
   const history = item.reviewHistory || [];
   const needsMore = history.length < 2;
   const img = item.image ?? item.image_url ?? null;
-
-  // Margin calculation
-  const sellingPrice = Number(item.price) || 0;
-  const totalCost = Number(sourcingCost) + Number(shippingCost);
-  const netProfit = Math.max(0, sellingPrice - totalCost);
-  const marginPercent =
-    sellingPrice > 0 ? Math.round((netProfit / sellingPrice) * 100) : 0;
 
   return (
     <section className="detail-container">
@@ -106,38 +93,6 @@ export default function ProductDetail({ item, onBack }) {
               </div>
             </dl>
 
-            {/* Profit Margin Estimator */}
-            <div className="calculator-box">
-              <div className="calc-header">
-                <h4>Dropship Profit Margin Estimator</h4>
-                <span className="roi-badge">{marginPercent}% Estimated Margin</span>
-              </div>
-              <div className="calc-inputs">
-                <label>
-                  Est. Sourcing Cost ({item.currency})
-                  <input
-                    type="number"
-                    value={sourcingCost}
-                    onChange={(e) => setSourcingCost(Number(e.target.value) || 0)}
-                  />
-                </label>
-                <label>
-                  Est. Shipping / Pack ({item.currency})
-                  <input
-                    type="number"
-                    value={shippingCost}
-                    onChange={(e) => setShippingCost(Number(e.target.value) || 0)}
-                  />
-                </label>
-                <div className="calc-result">
-                  <span className="calc-result-label">Net Profit / Unit</span>
-                  <span className="calc-result-val">
-                    {item.currency}
-                    {fmt(netProfit)}
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

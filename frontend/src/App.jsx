@@ -224,18 +224,6 @@ export default function App() {
         {/* Top Navbar */}
         <header className="top-navbar">
           <div className="navbar-left-group">
-            <button
-              type="button"
-              className="nav-sidebar-toggle-btn"
-              onClick={toggleSidebar}
-              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <line x1="9" y1="3" x2="9" y2="21" />
-              </svg>
-            </button>
             <div className="search-bar-wrapper">
               <span className="search-icon">
                 <SearchIcon size={16} />

@@ -254,6 +254,17 @@ export default function Sidebar({
         <div className="sidebar-nav-group">
           <button
             type="button"
+            className={`nav-btn ${activeView === "dashboard" ? "active" : ""}`}
+            onClick={() => onSelectView("dashboard")}
+            title="Dashboard"
+          >
+            <span className="nav-icon">
+              <DashboardIcon size={18} />
+            </span>
+            {!collapsed && <span className="nav-label">Dashboard</span>}
+          </button>
+          <button
+            type="button"
             className={`nav-btn ${activeView === "products" ? "active" : ""}`}
             onClick={() => onSelectView("products")}
             title="Trending Products"
@@ -273,17 +284,6 @@ export default function Sidebar({
               <CategoryMapIcon size={18} />
             </span>
             {!collapsed && <span className="nav-label">Category Mappings</span>}
-          </button>
-          <button
-            type="button"
-            className={`nav-btn ${activeView === "dashboard" ? "active" : ""}`}
-            onClick={() => onSelectView("dashboard")}
-            title="Dashboard"
-          >
-            <span className="nav-icon">
-              <DashboardIcon size={18} />
-            </span>
-            {!collapsed && <span className="nav-label">Dashboard</span>}
           </button>
         </div>
       </div>
