@@ -155,6 +155,37 @@ const AJIO_PAGE_SIZE = 45;
 const AJIO_MAX_PAGES = 3;
 const CACHE_VERSION = "v7";
 
+// DemandPulse backend - extension data goes to DB FIRST, UI reads from DB.
+const BACKEND_URL = "http://192.168.1.66:8000";
+
+async function postToBackend(products, category) {
+  if (!products || !products.length) return;
+  try {
+    const items = products
+      .filter((p) => p.image && !p.image.startsWith("data:"))
+      .map((p) => ({
+        store: p.store, title: p.title, price: p.price,
+        originalPrice: p.originalPrice || "", rating: p.rating,
+        starRating: p.starRating || "", reviewCount: p.reviewCount || "",
+        discount: p.discount || "", stockText: p.stockText || "",
+        image: p.image, link: p.link, category: category
+      }));
+    if (!items.length) return;
+    const res = await fetch(`${BACKEND_URL}/api/ingest`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items })
+    });
+    console.log(`DB push "${category}":`, await res.text());
+  } catch (err) {
+    console.error("DB push failed:", err);
+  }
+}
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 // Cache duration: 20 minutes in milliseconds
 const CACHE_DURATION_MS = 20 * 60 * 1000;
 
@@ -844,29 +875,42 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
 
 const ALARM_NAME = "trending_refresh";
 
-// Set up 20-minute alarm on extension install/startup
+// MV3 service workers sleep + old alarms persist across code updates,
+// so (re)create the 1-min alarm on EVERY worker start, not just install.
+chrome.alarms.create(ALARM_NAME, { periodInMinutes: 2 });
+
+// Set up 1-minute alarm on extension install/startup (backup paths)
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 20 });
-  console.log("TrendingPulse: 20-minute auto-refresh alarm created.");
+  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 2 });
+  console.log("TrendingPulse: 1-minute auto-fire alarm created.");
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 20 });
-  console.log("TrendingPulse: 20-minute auto-refresh alarm restored on startup.");
+  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 2 });
+  console.log("TrendingPulse: 1-minute auto-fire alarm restored on startup.");
 });
 
-// When alarm fires, refresh the last-used category (or default)
+// When alarm fires: same button-click process, next category each tick
+// (round-robin — otherwise only lastCategory/default ever fills the DB)
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
-    console.log("TrendingPulse: Auto-refresh triggered at", new Date().toLocaleTimeString());
-
-    // Get the last category the user was looking at
-    const result = await chrome.storage.local.get("lastCategory");
-    const category = result.lastCategory || "electronics";
-
-    // Force refresh (bypass cache)
-    const response = await fetchTrendingProducts(category, true);
-    console.log(`TrendingPulse: Auto-refresh done for "${category}" — ${response.count} products updated.`);
+    const keys = Object.keys(CATEGORY_CONFIG);
+    const stored = await chrome.storage.local.get(["catIndex", "alarmRunning"]);
+    if (stored.alarmRunning) {
+      console.log("TrendingPulse: previous cycle still running, skipping tick.");
+      return;
+    }
+    const idx = (stored.catIndex || 0) % keys.length;
+    const category = keys[idx];
+    await chrome.storage.local.set({ alarmRunning: true });
+    try {
+      console.log(`TrendingPulse: auto-fire [${idx + 1}/${keys.length}] "${category}"`);
+      const response = await fetchTrendingProducts(category, true);
+      console.log(`TrendingPulse: auto-fire done — ${response.count} products updated.`);
+      await chrome.storage.local.set({ catIndex: idx + 1, lastCategory: category });
+    } finally {
+      await chrome.storage.local.set({ alarmRunning: false });
+    }
   }
 });
 

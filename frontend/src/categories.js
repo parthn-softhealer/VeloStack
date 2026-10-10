@@ -470,8 +470,42 @@ export function getCategoryById(id) {
   return MAIN_CATEGORIES.find((c) => c.id === id) || MAIN_CATEGORIES[0];
 }
 
+// Extension scrape-category key -> MAIN id (extension CATEGORY_CONFIG keys).
+const EXT_TO_MAIN = {
+  electronics: "electronics",
+  computers: "computers",
+  fashion: "fashion",
+  shoes: "shoes",
+  watches: "watches",
+  jewellery: "jewellery",
+  "bags luggage": "bags",
+  "home kitchen": "kitchen",
+  "home improvement": "home-improvement",
+  furniture: "furniture",
+  beauty: "beauty",
+  "health personal care": "health",
+  "sports fitness": "sports",
+  books: "books",
+  "stationery office": "stationery",
+  baby: "baby",
+  "toys games": "toys",
+  grocery: "grocery",
+  automotive: "automotive",
+  "garden outdoor": "garden",
+  "pet supplies": "pets",
+  gaming: "gaming",
+  "musical instruments": "music",
+};
+
 export function matchesMainCategory(item, categoryId) {
   if (!categoryId || categoryId === "all") return true;
+  // TRUTH FIRST: extension-reported scrape category beats title guessing.
+  // (Title substring matching caused "SoldeRING Iron" -> Jewellery.)
+  const ext = String(item.extCategory || item.canonical || "").toLowerCase().trim();
+  if (ext) {
+    const mapped = EXT_TO_MAIN[ext];
+    if (mapped) return mapped === categoryId;
+  }
   const cat = getCategoryById(categoryId);
   if (!cat || !cat.keywords.length) return true;
 

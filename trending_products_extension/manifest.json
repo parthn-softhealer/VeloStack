@@ -12,7 +12,9 @@
     "https://www.amazon.in/*",
     "https://www.flipkart.com/*",
     "https://www.meesho.com/*",
-    "https://www.ajio.com/*"
+    "https://www.ajio.com/*",
+    "http://localhost:8000/*",
+    "http://192.168.1.66:8000/*"
   ],
   "action": {
     "default_popup": "popup.html",

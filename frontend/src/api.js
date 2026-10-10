@@ -94,6 +94,7 @@ function normalizeListing(row) {
     image_url: row.image_url ?? null,
     canonical: row.canonical ?? null,
     rawCategory: row.raw_category ?? null,
+    extCategory: row.ext_category ?? null,
     reviewHistory: snapshots.map((s) => ({
       date: String(s.snapped_at || "").slice(0, 10),
       reviewCount: s.review_count ?? 0,

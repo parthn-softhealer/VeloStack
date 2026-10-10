@@ -68,7 +68,7 @@ export default function App() {
 
   useEffect(() => {
     let alive = true;
-    Promise.all([fetchCategories(), fetchListings({ limit: 100 })])
+    Promise.all([fetchCategories(), fetchListings({ limit: 1000 })])
       .then(([cats, items]) => {
         if (!alive) return;
         setCategories(cats);
