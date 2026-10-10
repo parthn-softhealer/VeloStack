@@ -15,7 +15,8 @@ import CategoryView from "./components/CategoryView.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
-import { SearchIcon, EmptyBoxIcon } from "./components/Icons.jsx";
+import Pagination from "./components/Pagination.jsx";
+import { SearchIcon, EmptyBoxIcon, SunIcon, MoonIcon } from "./components/Icons.jsx";
 
 const PLATFORM_TABS = [
   { value: "all", label: "All Platforms" },
@@ -28,7 +29,7 @@ const PLATFORM_TABS = [
 
 const SORTS = [
   { value: "reviews", label: "Top Reviews (Highest)" },
-  { value: "rating", label: "Top Rating (★)" },
+  { value: "rating", label: "Top Rating (Highest)" },
   { value: "price-low", label: "Price: Low to High" },
   { value: "price-high", label: "Price: High to Low" },
 ];
@@ -48,6 +49,16 @@ export default function App() {
   const [listings, setListings] = useState([]);
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("demandpulse_theme") || "dark";
+    } catch {
+      return "dark";
+    }
+  });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem("demandpulse_sidebar_collapsed") === "true";
@@ -55,6 +66,31 @@ export default function App() {
       return false;
     }
   });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    try {
+      localStorage.setItem("demandpulse_theme", theme);
+    } catch {}
+  }, [theme]);
+
+  function toggleTheme() {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [platform, category, searchQuery, sort]);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        setPreviewImage(null);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function toggleSidebar() {
     setSidebarCollapsed((prev) => {
@@ -135,6 +171,14 @@ export default function App() {
     }
     return out;
   }, [listings, platform, category, searchQuery, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(visible.length / pageSize));
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const paginatedVisible = useMemo(() => {
+    const startIndex = (safeCurrentPage - 1) * pageSize;
+    return visible.slice(startIndex, startIndex + pageSize);
+  }, [visible, safeCurrentPage, pageSize]);
 
   async function openDetail(id) {
     const item =
@@ -217,6 +261,25 @@ export default function App() {
           </div>
 
           <div className="top-meta-info">
+            <button
+              type="button"
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label="Toggle dark/light theme"
+            >
+              {theme === "dark" ? (
+                <>
+                  <SunIcon size={15} />
+                  <span>Light</span>
+                </>
+              ) : (
+                <>
+                  <MoonIcon size={15} />
+                  <span>Dark</span>
+                </>
+              )}
+            </button>
             <div className="status-indicator">
               <span className="live-pulse" />
               <span>5 Marketplaces Online</span>
@@ -269,7 +332,7 @@ export default function App() {
                     )}
                   </h2>
                   <p className="view-subtext">
-                    Review acceleration & pricing intelligence for dropshippers
+                    Real-time trend velocity, review acceleration & dropship margins
                   </p>
                 </div>
 
@@ -374,11 +437,29 @@ export default function App() {
                   </button>
                 </div>
               ) : (
-                <div className="product-grid">
-                  {visible.map((item) => (
-                    <ProductCard key={item.id} item={item} onOpen={openDetail} />
-                  ))}
-                </div>
+                <>
+                  <div className="product-grid">
+                    {paginatedVisible.map((item) => (
+                      <ProductCard
+                        key={item.id}
+                        item={item}
+                        onOpen={openDetail}
+                        onPreviewImage={setPreviewImage}
+                      />
+                    ))}
+                  </div>
+
+                  <Pagination
+                    currentPage={safeCurrentPage}
+                    totalItems={visible.length}
+                    pageSize={pageSize}
+                    onPageChange={(page) => {
+                      setCurrentPage(page);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    onPageSizeChange={setPageSize}
+                  />
+                </>
               )}
             </section>
           )}
@@ -396,12 +477,56 @@ export default function App() {
 
         {/* Footer */}
         <footer className="workspace-footer">
-          <span>DemandPulse SaaS • Real-time Dropshipping & Sourcing Intelligence</span>
+          <span>DemandPulse • Real-Time Trending Product Discovery & Velocity Radar</span>
           <span className="footer-meta">
             Tracking {listings.length} active listings across 5 platforms
           </span>
         </footer>
       </div>
+
+      {/* Image Hover / Zoom Lightbox Popup Modal with Close Cross */}
+      {previewImage && (
+        <div
+          className="image-popup-backdrop"
+          onClick={() => setPreviewImage(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="image-popup-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="image-popup-close-btn"
+              onClick={() => setPreviewImage(null)}
+              title="Close image"
+              aria-label="Close image"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <div className="image-popup-body">
+              <img
+                src={previewImage.url}
+                alt={previewImage.title || "Product preview"}
+                className="image-popup-img"
+              />
+              <div className="image-popup-info">
+                <h4 className="image-popup-title">{previewImage.title}</h4>
+                {previewImage.price != null && (
+                  <span className="image-popup-price">
+                    {previewImage.currency || "₹"}{Number(previewImage.price).toLocaleString("en-IN")}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

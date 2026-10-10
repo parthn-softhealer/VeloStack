@@ -217,7 +217,7 @@ export default function Sidebar({
       {/* Sidebar Header with Brand and Collapse Toggle */}
       <div className="sidebar-brand">
         <div className="brand-header-left">
-          <div className="brand-logo-glow" title="DemandPulse Dropship Intelligence">
+          <div className="brand-logo-glow" title="DemandPulse Trend Discovery & Radar">
             <span className="logo-symbol">
               <BoltIcon size={22} />
             </span>
@@ -225,7 +225,7 @@ export default function Sidebar({
           {!collapsed && (
             <div className="brand-meta">
               <h1 className="brand-name">DemandPulse</h1>
-              <span className="brand-tagline">Dropship Intelligence</span>
+              <span className="brand-tagline">Trend Discovery & Radar</span>
             </div>
           )}
         </div>
@@ -326,25 +326,6 @@ export default function Sidebar({
             );
           })}
         </nav>
-      </div>
-
-      {/* Sidebar Footer */}
-      <div className="sidebar-footer">
-        {collapsed ? (
-          <div className="collapsed-footer-dot" title="Live Scraper Sync Active">
-            <span className="live-dot" />
-          </div>
-        ) : (
-          <div className="pro-callout">
-            <div className="callout-header">
-              <span className="live-dot" />
-              <strong className="callout-title">Live Scraper Sync</strong>
-            </div>
-            <p className="callout-desc">
-              Tracking velocity across Amazon, Flipkart, Meesho, Ajio & 1688 wholesale.
-            </p>
-          </div>
-        )}
       </div>
     </aside>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PhotoIcon, InfoIcon } from "./Icons.jsx";
+import { PhotoIcon, InfoIcon, StarIcon } from "./Icons.jsx";
 
 function fmt(n) {
   if (n == null || Number.isNaN(Number(n))) return "—";
@@ -82,7 +82,7 @@ export default function ProductDetail({ item, onBack }) {
                 )}
               </div>
               <div className="rating-pill">
-                <span className="star">★</span> {item.rating ?? "—"}
+                <StarIcon size={14} className="star-svg-icon" /> {item.rating ?? "—"}
                 <span className="reviews-sub">({fmt(item.reviewCount)} reviews)</span>
               </div>
             </div>

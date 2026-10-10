@@ -1,4 +1,4 @@
-import { PhotoIcon, BoltIcon } from "./Icons.jsx";
+import { PhotoIcon, BoltIcon, StarIcon } from "./Icons.jsx";
 
 function discount(price, mrp) {
   if (mrp == null || price == null || mrp <= price) return null;
@@ -19,61 +19,23 @@ function getVelocity(history = []) {
   return growth > 0 ? growth.toFixed(1) : null;
 }
 
-function DynamicSparkline({ history = [] }) {
-  if (!history || history.length < 2) {
-    // Elegant baseline wave
-    return (
-      <svg className="spark" viewBox="0 0 100 28" aria-hidden="true">
-        <path
-          d="M 0,22 Q 25,18 50,14 T 100,6"
-          fill="none"
-          stroke="var(--accent)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
-
-  const values = history.map((h) => h.reviewCount || 0);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-
-  const points = values.map((val, idx) => {
-    const x = (idx / (values.length - 1)) * 96 + 2;
-    // Map normalized value: inverted y (24 at bottom, 4 at top)
-    const norm = (val - min) / range;
-    const y = 24 - norm * 18;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-
-  const polylineStr = points.join(" ");
-
-  return (
-    <svg className="spark" viewBox="0 0 100 28" aria-hidden="true">
-      <defs>
-        <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.0" />
-        </linearGradient>
-      </defs>
-      <polyline
-        points={polylineStr}
-        fill="none"
-        stroke="var(--accent)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-export default function ProductCard({ item, onOpen }) {
+export default function ProductCard({ item, onOpen, onPreviewImage }) {
   const off = discount(item.price, item.mrp);
   const img = item.image ?? item.image_url ?? null;
   const velocity = getVelocity(item.reviewHistory);
+
+  function handleCornerExpandClick(e) {
+    e.stopPropagation();
+    if (img && onPreviewImage) {
+      onPreviewImage({
+        url: img,
+        title: item.title,
+        price: item.price,
+        currency: item.currency,
+        platform: item.platform,
+      });
+    }
+  }
 
   return (
     <article
@@ -87,7 +49,32 @@ export default function ProductCard({ item, onOpen }) {
     >
       <div className="img-wrap">
         {img ? (
-          <img src={img} alt={item.title} loading="lazy" />
+          <>
+            <img src={img} alt={item.title} loading="lazy" />
+            <button
+              type="button"
+              className="img-corner-expand-btn"
+              onClick={handleCornerExpandClick}
+              title="Click to view full image"
+              aria-label="Click to view full image"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            </button>
+          </>
         ) : (
           <div className="no-image" role="img" aria-label="No image yet">
             <span className="no-image-icon">
@@ -135,21 +122,13 @@ export default function ProductCard({ item, onOpen }) {
 
         <div className="meta-row">
           <span className="rating">
-            <span className="star-icon">★</span> {item.rating ?? "—"}
+            <StarIcon size={12} className="star-svg-icon" /> {item.rating ?? "—"}
           </span>
           <span className="reviews">{fmt(item.reviewCount)} reviews</span>
         </div>
 
         <div className="seller-row">
           <span className="seller-name">by {item.seller || "Verified Seller"}</span>
-        </div>
-
-        <div className="spark-container">
-          <div className="spark-header">
-            <span className="spark-label">Demand Velocity</span>
-            <span className="spark-status">Surging</span>
-          </div>
-          <DynamicSparkline history={item.reviewHistory} />
         </div>
       </div>
     </article>
