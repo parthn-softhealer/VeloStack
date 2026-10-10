@@ -12,6 +12,7 @@ import { getCategoryById } from "./categories.js";
 import Sidebar from "./components/Sidebar.jsx";
 import Tabs from "./components/Tabs.jsx";
 import CategoryView from "./components/CategoryView.jsx";
+import Dashboard from "./components/Dashboard.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 import { SearchIcon, EmptyBoxIcon } from "./components/Icons.jsx";
@@ -240,6 +241,17 @@ export default function App() {
               categories={categories}
               platform={platform}
               onPlatform={selectPlatform}
+            />
+          )}
+
+          {!loading && view === "dashboard" && (
+            <Dashboard
+              items={visible}
+              platform={platform}
+              onPlatform={selectPlatform}
+              platformOptions={PLATFORM_TABS}
+              selectedCategoryName={selectedCategoryObj.name}
+              searchQuery={searchQuery}
             />
           )}
 

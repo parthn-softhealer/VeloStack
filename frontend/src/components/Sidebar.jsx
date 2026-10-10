@@ -1,5 +1,5 @@
 import { MAIN_CATEGORIES, matchesMainCategory } from "../categories.js";
-import { TrendingIcon, CategoryMapIcon, BoltIcon } from "./Icons.jsx";
+import { TrendingIcon, CategoryMapIcon, DashboardIcon, BoltIcon } from "./Icons.jsx";
 
 function getCategoryIcon(icon) {
   switch (icon) {
@@ -273,6 +273,17 @@ export default function Sidebar({
               <CategoryMapIcon size={18} />
             </span>
             {!collapsed && <span className="nav-label">Category Mappings</span>}
+          </button>
+          <button
+            type="button"
+            className={`nav-btn ${activeView === "dashboard" ? "active" : ""}`}
+            onClick={() => onSelectView("dashboard")}
+            title="Dashboard"
+          >
+            <span className="nav-icon">
+              <DashboardIcon size={18} />
+            </span>
+            {!collapsed && <span className="nav-label">Dashboard</span>}
           </button>
         </div>
       </div>
