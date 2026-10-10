@@ -48,8 +48,11 @@ function categoryTokens(category) {
     .filter((t) => t.length > 2 && !CATEGORY_STOPWORDS.has(t));
 }
 
+import { matchesMainCategory } from "./categories.js";
+
 export function matchesCategory(item, category) {
   if (!category || category === "all") return true;
+  if (matchesMainCategory(item, category)) return true;
   if (item && item.canonical === category) return true;
   const title = String((item && item.title) || "").toLowerCase();
   if (!title) return false;

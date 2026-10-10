@@ -8,30 +8,27 @@ import {
   samePlatform,
   toBackendPlatform,
 } from "./api.js";
+import { getCategoryById } from "./categories.js";
+import Sidebar from "./components/Sidebar.jsx";
 import Tabs from "./components/Tabs.jsx";
 import CategoryView from "./components/CategoryView.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 
-const VIEW_TABS = [
-  { value: "products", label: "Products" },
-  { value: "categories", label: "Categories" },
-];
-
 const PLATFORM_TABS = [
-  { value: "all", label: "All" },
-  { value: "amazon", label: "Amazon" },
+  { value: "all", label: "All Platforms" },
+  { value: "amazon", label: "Amazon.in" },
   { value: "flipkart", label: "Flipkart" },
   { value: "meesho", label: "Meesho" },
   { value: "ajio", label: "Ajio" },
-  { value: "1688", label: "1688" },
+  { value: "1688", label: "1688 Wholesale" },
 ];
 
 const SORTS = [
-  { value: "reviews", label: "Top reviews" },
-  { value: "rating", label: "Top rating" },
-  { value: "price-low", label: "Price: low first" },
-  { value: "price-high", label: "Price: high first" },
+  { value: "reviews", label: "Top Reviews (Highest)" },
+  { value: "rating", label: "Top Rating (★)" },
+  { value: "price-low", label: "Price: Low to High" },
+  { value: "price-high", label: "Price: High to Low" },
 ];
 
 function num(v, fallback = 0) {
@@ -43,6 +40,7 @@ export default function App() {
   const [view, setView] = useState("products");
   const [platform, setPlatform] = useState("all");
   const [category, setCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState("reviews");
   const [categories, setCategories] = useState(null);
   const [listings, setListings] = useState([]);
@@ -68,7 +66,6 @@ export default function App() {
     };
   }, []);
 
-  // Backend platform key for the selected tab ("amazon" -> "amazon.in").
   const platformKey = toBackendPlatform(platform) || platform;
 
   const canonicalSlugs = useMemo(() => {
@@ -76,57 +73,34 @@ export default function App() {
     return list.map(canonicalSlug).filter(Boolean);
   }, [categories]);
 
-  // Raw names for the selected platform tab from /api/categories.
   const platformRaws = useMemo(() => {
     if (!categories || !categories.platforms) return [];
     if (platform === "all") return [];
     const plats = categories.platforms;
     const raws =
       plats[platform] || plats[platformKey] || plats[`${platform}.in`] || [];
-    // Avoid repeating a canonical slug that is also a raw name.
     const canonSet = new Set(canonicalSlugs);
     return raws.filter((r) => !canonSet.has(r));
   }, [categories, platform, platformKey, canonicalSlugs]);
 
-  // Canonical slugs that actually map to this platform (via mapping).
-  // Falls back to all slugs when mapping info is absent.
-  const platformCanonicals = useMemo(() => {
-    if (platform === "all") return canonicalSlugs;
-    const mapping =
-      (categories && categories.mapping) || null;
-    if (!mapping) return canonicalSlugs;
-    const keys = [platform, platformKey];
-    return canonicalSlugs.filter((slug) =>
-      keys.some((k) => mapping[slug] && mapping[slug][k]),
-    );
-  }, [canonicalSlugs, categories, platform, platformKey]);
-
-  // Category dropdown options: canonical chips + this platform's raw names.
-  const categoryOptions = useMemo(() => {
-    if (platform === "all") return canonicalSlugs.map((s) => ({ value: s, label: s }));
-    const seen = new Set();
-    const opts = [];
-    for (const s of platformCanonicals) {
-      if (!seen.has(s)) {
-        seen.add(s);
-        opts.push({ value: s, label: s, group: "canonical" });
-      }
-    }
-    for (const r of platformRaws) {
-      if (!seen.has(r)) {
-        seen.add(r);
-        opts.push({ value: r, label: r, group: "raw" });
-      }
-    }
-    return opts;
-  }, [platform, canonicalSlugs, platformCanonicals, platformRaws]);
-
   const visible = useMemo(() => {
     let out = [...listings];
-    if (platform !== "all")
+    if (platform !== "all") {
       out = out.filter((l) => samePlatform(l.platform, platform));
-    if (category !== "all")
+    }
+    if (category !== "all") {
       out = out.filter((l) => matchesCategory(l, category));
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      out = out.filter(
+        (l) =>
+          (l.title && l.title.toLowerCase().includes(q)) ||
+          (l.seller && l.seller.toLowerCase().includes(q)) ||
+          (l.canonical && l.canonical.toLowerCase().includes(q)) ||
+          (l.rawCategory && l.rawCategory.toLowerCase().includes(q))
+      );
+    }
     switch (sort) {
       case "price-low":
         out.sort((a, b) => num(a.price) - num(b.price));
@@ -141,7 +115,7 @@ export default function App() {
         out.sort((a, b) => num(b.reviewCount) - num(a.reviewCount));
     }
     return out;
-  }, [listings, platform, category, sort]);
+  }, [listings, platform, category, searchQuery, sort]);
 
   async function openDetail(id) {
     const item =
@@ -152,113 +126,232 @@ export default function App() {
 
   function selectPlatform(v) {
     setPlatform(v);
-    setCategory("all");
   }
 
+  const selectedCategoryObj = getCategoryById(category);
   const platformLabel =
     (PLATFORM_TABS.find((t) => t.value === platform) || {}).label || platform;
 
   return (
-    <div className="app">
-      <header className="header">
-        <div className="brand">
-          <span className="logo">DP</span>
-          <div>
-            <h1>DemandPulse</h1>
-            <p>Trending products for dropshippers</p>
-          </div>
-        </div>
-        <Tabs options={VIEW_TABS} value={view === "detail" ? "products" : view} onChange={setView} />
-      </header>
+    <div className="app-shell">
+      {/* Left Sidebar for Categories */}
+      <Sidebar
+        selectedCategory={category}
+        onSelectCategory={(catId) => {
+          setCategory(catId);
+          if (view === "detail") setView("products");
+        }}
+        listings={
+          platform === "all"
+            ? listings
+            : listings.filter((l) => samePlatform(l.platform, platform))
+        }
+        platform={platform}
+        activeView={view}
+        onSelectView={(v) => {
+          setView(v);
+          if (v !== "detail") setDetail(null);
+        }}
+      />
 
-      <main className="main">
-        {loading && <p className="empty">Loading latest picks...</p>}
-
-        {!loading && view === "categories" && (
-          <CategoryView
-            categories={categories}
-            platform={platform}
-            onPlatform={selectPlatform}
-          />
-        )}
-
-        {!loading && view === "products" && (
-          <section>
-            <h2 className="section-title">Trending products</h2>
-            <Tabs options={PLATFORM_TABS} value={platform} onChange={selectPlatform} />
-            <div className="filters">
-              <label>
-                Category
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="all">All categories</option>
-                  {platform === "all" ? (
-                    categoryOptions.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {c.label}
-                      </option>
-                    ))
-                  ) : (
-                    <>
-                      <optgroup label="Canonical">
-                        {platformCanonicals.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </optgroup>
-                      {platformRaws.length > 0 && (
-                        <optgroup label={`${platformLabel} raw`}>
-                          {platformRaws.map((r) => (
-                            <option key={r} value={r}>
-                              {r}
-                            </option>
-                          ))}
-                        </optgroup>
-                      )}
-                    </>
-                  )}
-                </select>
-              </label>
-              <label>
-                Sort by
-                <select value={sort} onChange={(e) => setSort(e.target.value)}>
-                  {SORTS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            {visible.length === 0 ? (
-              <p className="empty">No data yet - worker is collecting.</p>
-            ) : (
-              <div className="grid">
-                {visible.map((item) => (
-                  <ProductCard key={item.id} item={item} onOpen={openDetail} />
-                ))}
-              </div>
+      {/* Main Workspace Area */}
+      <div className="main-workspace">
+        {/* Top Navbar */}
+        <header className="top-navbar">
+          <div className="search-bar-wrapper">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search products, keywords, brands or sellers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
             )}
-          </section>
-        )}
+          </div>
 
-        {!loading && view === "detail" && (
-          <ProductDetail
-            item={detail}
-            onBack={() => {
-              setDetail(null);
-              setView("products");
-            }}
-          />
-        )}
-      </main>
+          <div className="top-meta-info">
+            <div className="status-indicator">
+              <span className="live-pulse" />
+              <span>5 Marketplaces Online</span>
+            </div>
+            <div className="tracked-stats-pill">
+              <strong>{listings.length}</strong> items tracked
+            </div>
+          </div>
+        </header>
 
-      <footer className="footer">
-        <span>DemandPulse • {listings.length} listings tracked</span>
-      </footer>
+        {/* Workspace Body */}
+        <div className="workspace-body">
+          {loading && (
+            <div className="loading-state">
+              <div className="spinner" />
+              <p>Fetching real-time trending products & categories...</p>
+            </div>
+          )}
+
+          {!loading && view === "categories" && (
+            <CategoryView
+              categories={categories}
+              platform={platform}
+              onPlatform={selectPlatform}
+            />
+          )}
+
+          {!loading && view === "products" && (
+            <section className="products-view">
+              {/* Controls bar */}
+              <div className="view-header-strip">
+                <div className="view-title-block">
+                  <h2 className="view-heading">
+                    {selectedCategoryObj.name}
+                    {category !== "all" && (
+                      <span className="active-tag-bubble">
+                        Filtered Category
+                      </span>
+                    )}
+                  </h2>
+                  <p className="view-subtext">
+                    Review acceleration & pricing intelligence for dropshippers
+                  </p>
+                </div>
+
+                <div className="sort-dropdown-wrap">
+                  <label htmlFor="sort-select">Sort by:</label>
+                  <select
+                    id="sort-select"
+                    className="styled-select"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                  >
+                    {SORTS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Platform Selector Tabs on Top */}
+              <div className="platform-nav-row">
+                <Tabs
+                  options={PLATFORM_TABS}
+                  value={platform}
+                  onChange={selectPlatform}
+                  isPlatformTabs
+                />
+              </div>
+
+              {/* Active Filter Pills Bar */}
+              {(category !== "all" || platform !== "all" || searchQuery) && (
+                <div className="active-filter-bar">
+                  <span className="filter-label">Active Filters:</span>
+                  {category !== "all" && (
+                    <span className="filter-badge">
+                      Category: {selectedCategoryObj.name}
+                      <button
+                        type="button"
+                        onClick={() => setCategory("all")}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  )}
+                  {platform !== "all" && (
+                    <span className="filter-badge">
+                      Platform: {platformLabel}
+                      <button
+                        type="button"
+                        onClick={() => setPlatform("all")}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  )}
+                  {searchQuery && (
+                    <span className="filter-badge">
+                      Query: "{searchQuery}"
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery("")}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    className="clear-all-filters-btn"
+                    onClick={() => {
+                      setCategory("all");
+                      setPlatform("all");
+                      setSearchQuery("");
+                    }}
+                  >
+                    Reset all
+                  </button>
+                </div>
+              )}
+
+              {/* Products Grid */}
+              {visible.length === 0 ? (
+                <div className="empty-state-box">
+                  <span className="empty-icon">📦</span>
+                  <h3>No matching products found</h3>
+                  <p>
+                    No items match the selected combination of category and platform.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn primary-btn"
+                    onClick={() => {
+                      setCategory("all");
+                      setPlatform("all");
+                      setSearchQuery("");
+                    }}
+                  >
+                    Show all products
+                  </button>
+                </div>
+              ) : (
+                <div className="product-grid">
+                  {visible.map((item) => (
+                    <ProductCard key={item.id} item={item} onOpen={openDetail} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {!loading && view === "detail" && (
+            <ProductDetail
+              item={detail}
+              onBack={() => {
+                setDetail(null);
+                setView("products");
+              }}
+            />
+          )}
+        </div>
+
+        {/* Footer */}
+        <footer className="workspace-footer">
+          <span>DemandPulse SaaS • Real-time Dropshipping & Sourcing Intelligence</span>
+          <span className="footer-meta">
+            Tracking {listings.length} active listings across 5 platforms
+          </span>
+        </footer>
+      </div>
     </div>
   );
 }

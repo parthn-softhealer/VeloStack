@@ -49,8 +49,12 @@ export default function CategoryView({ categories, platform, onPlatform }) {
 
   return (
     <section>
-      <h2 className="section-title">Categories</h2>
-      <Tabs options={tabs} value={platform} onChange={onPlatform} />
+      <h2 className="view-heading" style={{ marginBottom: "16px" }}>
+        Platform Category Mappings
+      </h2>
+      <div style={{ marginBottom: "20px" }}>
+        <Tabs options={tabs} value={platform} onChange={onPlatform} isPlatformTabs />
+      </div>
 
       <h3 className="sub-title">Canonical categories</h3>
       {canonical.length === 0 ? (

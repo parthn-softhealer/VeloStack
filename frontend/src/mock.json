@@ -1,8 +1,16 @@
 {
   "categories": {
     "canonical": [
+      "Electronics",
+      "Fashion",
+      "Watches & Jewelry",
+      "Shoes & Footwear",
+      "Home & Kitchen",
+      "Beauty & Personal Care",
       "Kurti Sets",
       "LED Lights",
+      "Smartwatches",
+      "Sneakers",
       "Kitchen Gadgets",
       "Jewellery",
       "Men's T-Shirts",
@@ -10,26 +18,35 @@
     ],
     "platforms": {
       "amazon": [
-        "Women's Kurtis",
+        "Electronics & Accessories",
         "LED Strip Lights",
-        "Kitchen Storage"
+        "Smart Watches & Bands",
+        "Men's Casual Shoes",
+        "Kitchen Storage & Gadgets",
+        "Women's Kurtis"
       ],
       "flipkart": [
+        "Bluetooth Headphones",
         "Portable Blenders",
-        "Home & Kitchen Appliances"
+        "Men's Sports Sneakers",
+        "Air Fryers & Kitchen Appliances"
       ],
       "meesho": [
         "Artificial Jewellery",
         "Jhumka Earrings",
-        "Women Ethnic Wear"
+        "Women Ethnic Wear",
+        "Women Flat Sandals"
       ],
       "ajio": [
         "Men's Oversized T-Shirts",
-        "Streetwear"
+        "Streetwear & Hoodies",
+        "Sneakers & Athletic Shoes"
       ],
       "1688": [
         "LED Makeup Mirror",
-        "Bluetooth Beauty Devices"
+        "Bluetooth Beauty Devices",
+        "Smart Fitness Tracker Wholesale",
+        "Breathable Running Shoes"
       ]
     }
   },
@@ -37,134 +54,242 @@
     {
       "id": "amz-001",
       "platform": "amazon",
-      "title": "Women's Cotton Blend Anarkali Kurti Set with Dupatta (Pack of 1)",
+      "title": "Women's Cotton Blend Embroidered Anarkali Kurti Set with Dupatta",
       "price": 799,
       "mrp": 1999,
       "currency": "₹",
       "rating": 4.2,
       "reviewCount": 12438,
       "seller": "FabStyle Apparel",
-      "image": null,
-      "canonical": "Kurti Sets",
+      "image": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Fashion",
       "rawCategory": "Women's Kurtis",
       "reviewHistory": [
-        {
-          "date": "2026-10-01",
-          "reviewCount": 12102
-        }
+        { "date": "2026-09-24", "reviewCount": 11500 },
+        { "date": "2026-10-01", "reviewCount": 12102 },
+        { "date": "2026-10-08", "reviewCount": 12438 }
       ],
-      "sample": true,
-      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+      "sample": true
     },
     {
       "id": "amz-002",
       "platform": "amazon",
-      "title": "USB LED Strip Lights 5M RGB 5050 with Remote Control for Home Decor",
+      "title": "USB LED Strip Lights 5M RGB 5050 with App & Remote Control for Room Decor",
       "price": 499,
       "mrp": 1299,
       "currency": "₹",
       "rating": 4.3,
       "reviewCount": 45210,
       "seller": "BrightHome India",
-      "image": null,
-      "canonical": "LED Lights",
+      "image": "https://images.unsplash.com/photo-1543599538-a6c4f6cc5c05?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Electronics",
       "rawCategory": "LED Strip Lights",
       "reviewHistory": [
-        {
-          "date": "2026-10-01",
-          "reviewCount": 44890
-        }
+        { "date": "2026-09-24", "reviewCount": 43200 },
+        { "date": "2026-10-01", "reviewCount": 44890 },
+        { "date": "2026-10-08", "reviewCount": 45210 }
       ],
-      "sample": true,
-      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+      "sample": true
+    },
+    {
+      "id": "amz-003",
+      "platform": "amazon",
+      "title": "Military Grade Bluetooth Calling Smartwatch with 1.95-inch AMOLED Display & SpO2",
+      "price": 1499,
+      "mrp": 4999,
+      "currency": "₹",
+      "rating": 4.5,
+      "reviewCount": 31200,
+      "seller": "PulseGear Tech",
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Watches & Jewelry",
+      "rawCategory": "Smart Watches & Bands",
+      "reviewHistory": [
+        { "date": "2026-09-24", "reviewCount": 28400 },
+        { "date": "2026-10-01", "reviewCount": 29950 },
+        { "date": "2026-10-08", "reviewCount": 31200 }
+      ],
+      "sample": true
     },
     {
       "id": "fk-001",
       "platform": "flipkart",
-      "title": "Portable Mini Blender USB Rechargeable Juicer for Fruits & Shakes (380ml)",
+      "title": "Portable Mini Blender USB Rechargeable Juicer for Smoothies & Shakes (400ml)",
       "price": 899,
       "mrp": 1999,
       "currency": "₹",
       "rating": 4.1,
       "reviewCount": 8932,
       "seller": "KitchenKart",
-      "image": null,
-      "canonical": "Kitchen Gadgets",
+      "image": "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Home & Kitchen",
       "rawCategory": "Portable Blenders",
       "reviewHistory": [
-        {
-          "date": "2026-10-01",
-          "reviewCount": 8755
-        }
+        { "date": "2026-09-24", "reviewCount": 8100 },
+        { "date": "2026-10-01", "reviewCount": 8755 },
+        { "date": "2026-10-08", "reviewCount": 8932 }
       ],
-      "sample": true,
-      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+      "sample": true
+    },
+    {
+      "id": "fk-002",
+      "platform": "flipkart",
+      "title": "Men's Ultra-Lightweight Breathable Mesh Running Shoes & Sneakers",
+      "price": 699,
+      "mrp": 1799,
+      "currency": "₹",
+      "rating": 4.2,
+      "reviewCount": 18450,
+      "seller": "StrideFootwear",
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Shoes & Footwear",
+      "rawCategory": "Men's Sports Sneakers",
+      "reviewHistory": [
+        { "date": "2026-09-24", "reviewCount": 16900 },
+        { "date": "2026-10-01", "reviewCount": 17800 },
+        { "date": "2026-10-08", "reviewCount": 18450 }
+      ],
+      "sample": true
     },
     {
       "id": "me-001",
       "platform": "meesho",
-      "title": "Stylish Gold-Plated Jhumka Earrings for Women (Pack of 2)",
+      "title": "Traditional Gold-Plated Kundan & Pearl Jhumka Earrings for Women",
       "price": 149,
       "mrp": 499,
       "currency": "₹",
       "rating": 4.0,
       "reviewCount": 23540,
       "seller": "Shine Jewels",
-      "image": null,
-      "canonical": "Jewellery",
+      "image": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Watches & Jewelry",
       "rawCategory": "Jhumka Earrings",
       "reviewHistory": [
-        {
-          "date": "2026-10-01",
-          "reviewCount": 23110
-        }
+        { "date": "2026-09-24", "reviewCount": 21800 },
+        { "date": "2026-10-01", "reviewCount": 23110 },
+        { "date": "2026-10-08", "reviewCount": 23540 }
       ],
-      "sample": true,
-      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+      "sample": true
+    },
+    {
+      "id": "me-002",
+      "platform": "meesho",
+      "title": "Women's Comfortable Flat Slip-On Loafer Sandals with Cushion Sole",
+      "price": 289,
+      "mrp": 799,
+      "currency": "₹",
+      "rating": 4.1,
+      "reviewCount": 11340,
+      "seller": "StepIn Comfort",
+      "image": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Shoes & Footwear",
+      "rawCategory": "Women Flat Sandals",
+      "reviewHistory": [
+        { "date": "2026-09-24", "reviewCount": 10200 },
+        { "date": "2026-10-01", "reviewCount": 10900 },
+        { "date": "2026-10-08", "reviewCount": 11340 }
+      ],
+      "sample": true
     },
     {
       "id": "aj-001",
       "platform": "ajio",
-      "title": "Men's Oversized Cotton Streetwear T-Shirt - Drop Shoulder Fit",
-      "price": 399,
-      "mrp": 999,
+      "title": "Men's Heavyweight Oversized Graphic Cotton Streetwear T-Shirt",
+      "price": 449,
+      "mrp": 1199,
       "currency": "₹",
       "rating": 4.4,
       "reviewCount": 5214,
       "seller": "UrbanThread",
-      "image": null,
-      "canonical": "Men's T-Shirts",
+      "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Fashion",
       "rawCategory": "Men's Oversized T-Shirts",
       "reviewHistory": [
-        {
-          "date": "2026-10-01",
-          "reviewCount": 4980
-        }
+        { "date": "2026-09-24", "reviewCount": 4400 },
+        { "date": "2026-10-01", "reviewCount": 4980 },
+        { "date": "2026-10-08", "reviewCount": 5214 }
       ],
-      "sample": true,
-      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+      "sample": true
+    },
+    {
+      "id": "aj-002",
+      "platform": "ajio",
+      "title": "Retro Low-Top Skateboarding Sneakers with Vulcanized Rubber Sole",
+      "price": 1299,
+      "mrp": 2999,
+      "currency": "₹",
+      "rating": 4.3,
+      "reviewCount": 3890,
+      "seller": "SoleCrafters",
+      "image": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Shoes & Footwear",
+      "rawCategory": "Sneakers & Athletic Shoes",
+      "reviewHistory": [
+        { "date": "2026-09-24", "reviewCount": 3200 },
+        { "date": "2026-10-01", "reviewCount": 3610 },
+        { "date": "2026-10-08", "reviewCount": 3890 }
+      ],
+      "sample": true
     },
     {
       "id": "1688-001",
       "platform": "1688",
-      "title": "Cross-Border LED Makeup Mirror with Bluetooth Speaker & Touch Control",
+      "title": "Cross-Border Smart LED Makeup Mirror with Tri-Color Lighting & Touch Dimmer",
       "price": 38.5,
       "mrp": 89.9,
       "currency": "¥",
       "rating": 4.6,
       "reviewCount": 3120,
       "seller": "Guangzhou Beauty Supply",
-      "image": null,
-      "canonical": "Beauty Electronics",
+      "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Beauty & Personal Care",
       "rawCategory": "LED Makeup Mirror",
       "reviewHistory": [
-        {
-          "date": "2026-10-01",
-          "reviewCount": 3050
-        }
+        { "date": "2026-09-24", "reviewCount": 2800 },
+        { "date": "2026-10-01", "reviewCount": 3050 },
+        { "date": "2026-10-08", "reviewCount": 3120 }
       ],
-      "sample": true,
-      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+      "sample": true
+    },
+    {
+      "id": "1688-002",
+      "platform": "1688",
+      "title": "TWS Wireless Noise-Cancelling Earbuds with Digital Battery LED Display",
+      "price": 28.0,
+      "mrp": 65.0,
+      "currency": "¥",
+      "rating": 4.7,
+      "reviewCount": 14200,
+      "seller": "Shenzhen Acoustics Co.",
+      "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Electronics",
+      "rawCategory": "Bluetooth Headphones",
+      "reviewHistory": [
+        { "date": "2026-09-24", "reviewCount": 12800 },
+        { "date": "2026-10-01", "reviewCount": 13600 },
+        { "date": "2026-10-08", "reviewCount": 14200 }
+      ],
+      "sample": true
+    },
+    {
+      "id": "fk-003",
+      "platform": "flipkart",
+      "title": "Professional Cordless Beard Trimmer & Hair Clipper with 20 Length Settings",
+      "price": 799,
+      "mrp": 1999,
+      "currency": "₹",
+      "rating": 4.3,
+      "reviewCount": 16500,
+      "seller": "NovaTrim",
+      "image": "https://images.unsplash.com/photo-1621607512214-68297480165e?auto=format&fit=crop&w=600&q=80",
+      "canonical": "Beauty & Personal Care",
+      "rawCategory": "Trimmer & Grooming",
+      "reviewHistory": [
+        { "date": "2026-09-24", "reviewCount": 15100 },
+        { "date": "2026-10-01", "reviewCount": 15900 },
+        { "date": "2026-10-08", "reviewCount": 16500 }
+      ],
+      "sample": true
     }
   ]
 }
