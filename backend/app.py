@@ -86,7 +86,7 @@ def categories():
 @app.get("/api/listings")
 def listings(platform: Optional[str] = Query(default=None),
              canonical: Optional[str] = Query(default=None, description="canonical slug"),
-             limit: int = Query(default=1000, le=5000)):
+             limit: int = Query(default=10000, le=50000)):
     """List listings. canonical slug -> heuristic title-keyword match until
     platform_categories.canonical_id mapping is curated."""
     where, params = [], []

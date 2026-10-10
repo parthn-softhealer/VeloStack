@@ -34,6 +34,8 @@ const SORTS = [
   { value: "price-high", label: "Price: High to Low" },
 ];
 
+const INITIAL_LISTING_LIMIT = 10000;
+
 function num(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
@@ -71,7 +73,7 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", theme);
     try {
       localStorage.setItem("demandpulse_theme", theme);
-    } catch {}
+    } catch { }
   }, [theme]);
 
   function toggleTheme() {
@@ -97,14 +99,14 @@ export default function App() {
       const next = !prev;
       try {
         localStorage.setItem("demandpulse_sidebar_collapsed", String(next));
-      } catch {}
+      } catch { }
       return next;
     });
   }
 
   useEffect(() => {
     let alive = true;
-    Promise.all([fetchCategories(), fetchListings({ limit: 1000 })])
+    Promise.all([fetchCategories(), fetchListings({ limit: INITIAL_LISTING_LIMIT })])
       .then(([cats, items]) => {
         if (!alive) return;
         setCategories(cats);
@@ -228,23 +230,23 @@ export default function App() {
               <span className="search-icon">
                 <SearchIcon size={16} />
               </span>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search products, keywords, brands or sellers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                className="search-clear-btn"
-                onClick={() => setSearchQuery("")}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search products, keywords, brands or sellers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
 
