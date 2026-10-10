@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrendingPulse - All Categories</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <img src="logo.png" alt="TrendingPulse logo" class="logo-img">
+        <h1>Trending<span class="highlight">Pulse</span></h1>
+      </div>
+      <span id="cacheIndicator" class="badge" title="Auto-refreshes every 20 minutes">Live</span>
+    </header>
+
+    <!-- Controls / Filters -->
+    <div class="control-panel">
+      <div class="form-group">
+        <label for="categorySelect">Select Category</label>
+        <select id="categorySelect" class="styled-select">
+          <option value="electronics">⚡ Electronics</option>
+          <option value="computers">💻 Computers & Laptops</option>
+          <option value="fashion">👗 Fashion & Clothing</option>
+          <option value="shoes">👟 Shoes & Footwear</option>
+          <option value="watches">⌚ Watches</option>
+          <option value="jewellery">💎 Jewellery</option>
+          <option value="bags luggage">👜 Bags & Luggage</option>
+          <option value="home kitchen">🏠 Home & Kitchen</option>
+          <option value="home improvement">🔧 Home Improvement</option>
+          <option value="furniture">🛋️ Furniture</option>
+          <option value="beauty">💄 Beauty</option>
+          <option value="health personal care">💊 Health & Personal Care</option>
+          <option value="sports fitness">🏏 Sports & Fitness</option>
+          <option value="books">📚 Books</option>
+          <option value="stationery office">✏️ Stationery & Office</option>
+          <option value="baby">👶 Baby Products</option>
+          <option value="toys games">🧸 Toys & Games</option>
+          <option value="grocery">🛒 Grocery</option>
+          <option value="automotive">🚗 Automotive</option>
+          <option value="garden outdoor">🌿 Garden & Outdoor</option>
+          <option value="pet supplies">🐾 Pet Supplies</option>
+          <option value="gaming">🎮 Gaming</option>
+          <option value="musical instruments">🎸 Musical Instruments</option>
+        </select>
+      </div>
+
+      <!-- Store Tabs -->
+      <div class="store-tabs">
+        <button class="tab-btn active" data-store="all">All Stores</button>
+        <button class="tab-btn" data-store="amazon">Amazon</button>
+        <button class="tab-btn" data-store="flipkart">Flipkart</button>
+      </div>
+
+      <button id="fetchBtn" class="primary-btn">
+        <span class="btn-text">Find Trending Products</span>
+        <span class="spinner hidden"></span>
+      </button>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="status-bar hidden">
+      <span id="statusText">Fetching live data...</span>
+    </div>
+
+    <!-- Results Section -->
+    <main class="results-container">
+      <div id="productsGrid" class="products-grid">
+        <!-- Dynamic Product Cards Will Be Rendered Here -->
+      </div>
+
+      <!-- Empty / Loading State -->
+      <div id="emptyState" class="empty-state">
+        <span class="empty-icon">🛒</span>
+        <p>Select a category and click <strong>"Find Trending Products"</strong> to see live top deals from Amazon & Flipkart!</p>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>Live E-Commerce Scraper • Auto-refreshes every 20 min</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
