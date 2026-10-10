@@ -9,6 +9,7 @@
   --amazon-orange: #ff9900;
   --flipkart-blue: #2874f0;
   --meesho-pink: #9f2089;
+  --ajio-cyan: #00b8d4;
   --border-color: #334155;
   --radius: 12px;
 }
@@ -130,7 +131,7 @@ body {
 /* Store Tabs */
 .store-tabs {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   background: var(--bg-card);
   padding: 4px;
   border-radius: 10px;
@@ -139,11 +140,11 @@ body {
 
 .tab-btn {
   flex: 1;
-  padding: 6px 7px;
+  padding: 6px 5px;
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 600;
   border-radius: 7px;
   cursor: pointer;
@@ -345,6 +346,12 @@ body {
   background: rgba(159, 32, 137, 0.2);
   color: #f472d0;
   border: 1px solid rgba(159, 32, 137, 0.45);
+}
+
+.store-tag.ajio {
+  background: rgba(0, 184, 212, 0.2);
+  color: var(--ajio-cyan);
+  border: 1px solid rgba(0, 184, 212, 0.45);
 }
 
 .rating {

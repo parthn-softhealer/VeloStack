@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fetch Live Data from Service Worker
   function loadLiveCategoryData(categoryQuery) {
-    showLoading(true, `Scraping live trending ${categoryQuery} from Amazon, Flipkart & Meesho...`);
+    showLoading(true, `Scraping live trending ${categoryQuery} from Amazon, Flipkart, Meesho & Ajio...`);
 
     chrome.runtime.sendMessage(
       { action: "getTrendingProducts", category: categoryQuery },
@@ -88,7 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const storeDetails = {
         amazon: "Amazon",
         flipkart: "Flipkart",
-        meesho: "Meesho"
+        meesho: "Meesho",
+        ajio: "Ajio"
       };
       const storeClass = product.store || "amazon";
       const storeName = storeDetails[storeClass] || "Store";

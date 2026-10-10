@@ -1,139 +1,159 @@
 // background.js - Live Scraper with ALL Categories + 20-Minute Auto-Refresh Cache
 
 // ═══════════════════════════════════════════════════════════════════
-// ALL PRODUCT CATEGORIES - Amazon Best Sellers, Flipkart, and Meesho
+// ALL PRODUCT CATEGORIES - Amazon Best Sellers, Flipkart, Meesho, and Ajio
 // ═══════════════════════════════════════════════════════════════════
 const CATEGORY_CONFIG = {
   "electronics": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/electronics",
     flipkartQuery: "electronics",
-    meeshoQuery: "electronics"
+    meeshoQuery: "electronics",
+    ajioQuery: "electronics"
   },
   "computers": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/computers",
-    flipkartQuery: "computers laptops"
+    flipkartQuery: "computers laptops",
+    meeshoQuery: "computers laptops",
+    ajioQuery: "computers laptops"
   },
   "fashion": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/apparel",
-    flipkartQuery: "fashion clothing"
+    flipkartQuery: "fashion clothing",
+    meeshoQuery: "fashion clothing",
+    ajioQuery: "fashion clothing"
   },
   "shoes": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/shoes",
-    flipkartQuery: "shoes footwear"
+    flipkartQuery: "shoes footwear",
+    meeshoQuery: "shoes footwear",
+    ajioQuery: "shoes footwear"
   },
   "watches": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/watches",
-    flipkartQuery: "watches"
+    flipkartQuery: "watches",
+    meeshoQuery: "watches",
+    ajioQuery: "watches"
   },
   "jewellery": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/jewelry",
-    flipkartQuery: "jewellery"
+    flipkartQuery: "jewellery",
+    meeshoQuery: "jewellery",
+    ajioQuery: "jewellery"
   },
   "bags luggage": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/luggage",
-    flipkartQuery: "bags luggage"
+    flipkartQuery: "bags luggage",
+    meeshoQuery: "bags luggage",
+    ajioQuery: "bags luggage"
   },
   "home kitchen": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/kitchen",
-    flipkartQuery: "home kitchen"
+    flipkartQuery: "home kitchen",
+    meeshoQuery: "home kitchen",
+    ajioQuery: "home kitchen"
   },
   "home improvement": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/home-improvement",
-    flipkartQuery: "home improvement"
+    flipkartQuery: "home improvement",
+    meeshoQuery: "home improvement",
+    ajioQuery: "home improvement"
   },
   "furniture": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/furniture",
-    flipkartQuery: "furniture"
+    flipkartQuery: "furniture",
+    meeshoQuery: "furniture",
+    ajioQuery: "furniture"
   },
   "beauty": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/beauty",
-    flipkartQuery: "beauty"
+    flipkartQuery: "beauty",
+    meeshoQuery: "beauty",
+    ajioQuery: "beauty"
   },
   "health personal care": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/hpc",
-    flipkartQuery: "health personal care"
+    flipkartQuery: "health personal care",
+    meeshoQuery: "health personal care",
+    ajioQuery: "health personal care"
   },
   "sports fitness": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/sports",
-    flipkartQuery: "sports fitness"
+    flipkartQuery: "sports fitness",
+    meeshoQuery: "sports fitness",
+    ajioQuery: "sports fitness"
   },
   "books": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/books",
-    flipkartQuery: "books"
+    flipkartQuery: "books",
+    meeshoQuery: "books",
+    ajioQuery: "books"
   },
   "stationery office": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/office",
-    flipkartQuery: "stationery office supplies"
+    flipkartQuery: "stationery office supplies",
+    meeshoQuery: "stationery office supplies",
+    ajioQuery: "stationery office supplies"
   },
   "baby": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/baby",
-    flipkartQuery: "baby products"
+    flipkartQuery: "baby products",
+    meeshoQuery: "baby products",
+    ajioQuery: "baby products"
   },
   "toys games": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/toys",
-    flipkartQuery: "toys games"
+    flipkartQuery: "toys games",
+    meeshoQuery: "toys games",
+    ajioQuery: "toys games"
   },
   "grocery": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/grocery",
-    flipkartQuery: "grocery"
+    flipkartQuery: "grocery",
+    meeshoQuery: "grocery",
+    ajioQuery: "grocery"
   },
   "automotive": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/automotive",
-    flipkartQuery: "automotive accessories"
+    flipkartQuery: "automotive accessories",
+    meeshoQuery: "automotive accessories",
+    ajioQuery: "automotive accessories"
   },
   "garden outdoor": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/lawn-garden",
-    flipkartQuery: "garden outdoor"
+    flipkartQuery: "garden outdoor",
+    meeshoQuery: "garden outdoor",
+    ajioQuery: "garden outdoor"
   },
   "pet supplies": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/pet-supplies",
-    flipkartQuery: "pet supplies"
+    flipkartQuery: "pet supplies",
+    meeshoQuery: "pet supplies",
+    ajioQuery: "pet supplies"
   },
   "gaming": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/videogames",
-    flipkartQuery: "gaming"
+    flipkartQuery: "gaming",
+    meeshoQuery: "gaming",
+    ajioQuery: "gaming"
   },
   "musical instruments": {
     amazonUrl: "https://www.amazon.in/gp/bestsellers/musical-instruments",
-    flipkartQuery: "musical instruments"
+    flipkartQuery: "musical instruments",
+    meeshoQuery: "musical instruments",
+    ajioQuery: "musical instruments"
   }
 };
 
 const PRODUCT_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65' viewBox='0 0 65 65'%3E%3Crect width='65' height='65' rx='8' fill='%23e5e7eb'/%3E%3Cpath d='M19 43h27l-8-10-6 7-4-5-9 8z' fill='%239ca3af'/%3E%3Ccircle cx='25' cy='24' r='5' fill='%239ca3af'/%3E%3C/svg%3E";
 const MEESHO_SEARCH_URL = "https://www.meesho.com/api/v1/products/search";
+const AJIO_SEARCH_URL = "https://www.ajio.com/api/search";
 const PRODUCTS_PER_STORE = 100;
 const AMAZON_MAX_PAGES = 2;
 const FLIPKART_MAX_PAGES = 5;
 const MEESHO_PAGE_SIZE = 20;
-const CACHE_VERSION = "v6";
-
-// DemandPulse backend - extension data goes to DB FIRST, UI reads from DB.
-const BACKEND_URL = "http://localhost:8000";
-
-async function postToBackend(products, category) {
-  if (!products || !products.length) return;
-  try {
-    const items = products
-      .filter((p) => p.image && !p.image.startsWith("data:"))
-      .map((p) => ({
-        store: p.store, title: p.title, price: p.price,
-        rating: p.rating, image: p.image, link: p.link, category: category
-      }));
-    if (!items.length) return;
-    const res = await fetch(`${BACKEND_URL}/api/ingest`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items })
-    });
-    console.log(`DB push "${category}":`, await res.text());
-  } catch (err) {
-    console.error("DB push failed:", err);
-  }
-}
-
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
+const AJIO_PAGE_SIZE = 45;
+const AJIO_MAX_PAGES = 3;
+const CACHE_VERSION = "v7";
 
 // Cache duration: 20 minutes in milliseconds
 const CACHE_DURATION_MS = 20 * 60 * 1000;
@@ -157,7 +177,8 @@ function getCategoryConfig(categoryName) {
   return {
     amazonUrl: config.amazonUrl || CATEGORY_CONFIG.electronics.amazonUrl,
     flipkartQuery: config.flipkartQuery || key || "electronics",
-    meeshoQuery: config.meeshoQuery || config.flipkartQuery || key || "electronics"
+    meeshoQuery: config.meeshoQuery || config.flipkartQuery || key || "electronics",
+    ajioQuery: config.ajioQuery || config.flipkartQuery || key || "electronics"
   };
 }
 
@@ -249,6 +270,21 @@ async function fetchJSON(url, data) {
     return await response.json();
   } catch (error) {
     console.error(`JSON fetch failed for ${url}:`, error);
+    return null;
+  }
+}
+
+async function fetchJSONGet(url) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "Accept": "application/json, text/plain, */*"
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error(`JSON GET failed for ${url}:`, error);
     return null;
   }
 }
@@ -536,6 +572,218 @@ async function scrapeMeeshoLive(categoryName) {
   return products;
 }
 
+function normalizeAjioImage(value) {
+  const imageUrl = typeof value === "string" ? value : (
+    value && (value.url || value.imageUrl || value.img || value.src)
+  );
+  if (!imageUrl) return "";
+
+  const cleaned = cleanUrl(imageUrl);
+  if (cleaned.startsWith("//")) return `https:${cleaned}`;
+  if (cleaned.startsWith("/")) return `https://assets.ajio.com${cleaned}`;
+  return cleaned;
+}
+
+function getAjioImage(product) {
+  const imageFields = [
+    product.images,
+    product.galleryImages,
+    product.productImages,
+    product.image,
+    product.imageUrl,
+    product.thumbnail,
+    product.thumbnailUrl
+  ];
+
+  for (const value of imageFields) {
+    if (Array.isArray(value)) {
+      const preferredImage = value.find((item) => item && /product|main|primary/i.test(item.format || item.imageType || "")) ||
+        value[0];
+      const image = normalizeAjioImage(preferredImage);
+      if (image) return image;
+    } else {
+      const image = normalizeAjioImage(value);
+      if (image) return image;
+    }
+  }
+
+  return PRODUCT_PLACEHOLDER;
+}
+
+function getAjioPrice(product, fieldNames) {
+  for (const fieldName of fieldNames) {
+    const value = product[fieldName];
+    if (!value) continue;
+
+    if (typeof value === "object") {
+      const formattedValue = value.formattedValue || value.displayValue || value.value;
+      if (formattedValue) return normalizePrice(formattedValue);
+    } else {
+      return normalizePrice(value);
+    }
+  }
+
+  return "N/A";
+}
+
+function getAjioLink(product) {
+  const rawUrl = cleanUrl(product.url || product.productUrl || product.link || product.urlPath || "");
+  if (!rawUrl) return "https://www.ajio.com";
+  if (rawUrl.startsWith("http")) return rawUrl;
+  return `https://www.ajio.com${rawUrl.startsWith("/") ? rawUrl : `/${rawUrl}`}`;
+}
+
+function getAjioProductsFromData(data) {
+  if (!data || typeof data !== "object") return [];
+  if (Array.isArray(data.products)) return data.products;
+  if (Array.isArray(data.results)) return data.results;
+  if (data.searchResult && Array.isArray(data.searchResult.products)) return data.searchResult.products;
+  if (data.plpData && Array.isArray(data.plpData.products)) return data.plpData.products;
+  return [];
+}
+
+function normalizeAjioRating(product) {
+  return product.averageRating || product.avgRating || product.rating || product.ratingValue ||
+    product.ratingsAverage || product.overallRating;
+}
+
+function normalizeAjioReviewCount(product) {
+  return product.reviewCount || product.reviewsCount || product.noOfReviews || product.numberOfReviews ||
+    product.ratingCount || product.ratingsCount || product.noOfRatings;
+}
+
+function normalizeAjioStock(product) {
+  const stockValue = product.stock || product.stockLevel || product.availableQuantity || product.available_quantity;
+  const stockStatus = product.stockStatus || product.stockLevelStatus || product.availability || "";
+  if (Number(stockValue) > 0 && Number(stockValue) <= 5) return `Only ${stockValue} left`;
+  if (/out\s*of\s*stock/i.test(stockStatus)) return "Out of stock";
+  if (/low|limited/i.test(stockStatus)) return "Limited stock";
+  return "Check site";
+}
+
+function normalizeAjioDiscount(value) {
+  const text = cleanText(value);
+  if (!text) return "N/A";
+  return normalizeDiscount(/^\d+$/.test(text) ? `${text}% off` : text);
+}
+
+// Scrape Ajio search results through the same API/page data used by ajio.com/search.
+async function scrapeAjioLive(categoryName) {
+  const ajioQuery = getCategoryConfig(categoryName).ajioQuery;
+  const products = [];
+  const seenLinks = new Set();
+
+  for (let page = 0; page < AJIO_MAX_PAGES && products.length < PRODUCTS_PER_STORE; page++) {
+    const params = new URLSearchParams({
+      fields: "FULL",
+      currentPage: String(page),
+      pageSize: String(AJIO_PAGE_SIZE),
+      format: "json",
+      query: `${ajioQuery}:relevance`,
+      sortBy: "relevance",
+      gridColumns: "3",
+      facets: "",
+      advfilter: "true",
+      platform: "Desktop"
+    });
+    const data = await fetchJSONGet(`${AJIO_SEARCH_URL}?${params.toString()}`);
+    const apiProducts = getAjioProductsFromData(data);
+
+    if (!apiProducts.length) {
+      if (page === 0) {
+        const fallbackProducts = await scrapeAjioHtmlFallback(ajioQuery, seenLinks);
+        products.push(...fallbackProducts.slice(0, PRODUCTS_PER_STORE));
+      }
+      break;
+    }
+
+    for (const product of apiProducts) {
+      if (products.length >= PRODUCTS_PER_STORE) break;
+
+      const title = cleanText(product.name || product.productName || product.displayName || product.title);
+      const link = getAjioLink(product);
+      if (!title || seenLinks.has(link)) continue;
+      seenLinks.add(link);
+
+      const ratingValue = normalizeAjioRating(product);
+      const reviewCount = normalizeAjioReviewCount(product);
+      const discountValue = product.discountPercent || product.discountPercentage || product.discount ||
+        product.offerPriceDiscount || product.priceDiscount || "";
+      const price = getAjioPrice(product, ["price", "salePrice", "sellingPrice", "discountedPrice", "offerPrice"]);
+      const originalPrice = getAjioPrice(product, ["wasPriceData", "wasPrice", "mrp", "originalPrice", "listPrice"]);
+
+      products.push({
+        id: `ajio-${products.length + 1}-${Date.now()}`,
+        title: title,
+        price: price === "N/A" ? "Check Site" : price,
+        originalPrice: originalPrice,
+        rating: ratingValue ? `${ratingValue}★${reviewCount ? ` (${reviewCount})` : ""}` : `#${products.length + 1} Popular`,
+        starRating: ratingValue ? normalizeRating(ratingValue) : "N/A",
+        reviewCount: reviewCount ? String(reviewCount) : "N/A",
+        discount: normalizeAjioDiscount(discountValue),
+        stockText: normalizeAjioStock(product),
+        store: "ajio",
+        image: getAjioImage(product),
+        link: link
+      });
+    }
+
+    if (apiProducts.length < AJIO_PAGE_SIZE) break;
+  }
+
+  return products;
+}
+
+async function scrapeAjioHtmlFallback(ajioQuery, seenLinks) {
+  const products = [];
+  const html = await fetchPageHTML(`https://www.ajio.com/search/?text=${encodeURIComponent(ajioQuery)}`);
+  if (!html) return products;
+
+  const linkRegex = /href="(\/[^"]*\/p\/[^"]*)"/gi;
+  let linkMatch;
+
+  while ((linkMatch = linkRegex.exec(html)) && products.length < PRODUCTS_PER_STORE) {
+    const blockStart = Math.max(0, linkMatch.index - 1500);
+    const blockEnd = Math.min(html.length, linkMatch.index + 3500);
+    const block = html.slice(blockStart, blockEnd);
+    const link = `https://www.ajio.com${cleanUrl(linkMatch[1]).split("?")[0]}`;
+    if (seenLinks.has(link)) continue;
+    seenLinks.add(link);
+
+    const titleMatch = block.match(/alt="([^"]+)"/i) ||
+      block.match(/class="[^"]*(?:nameCls|name|product-title)[^"]*"[^>]*>([\s\S]*?)<\/(?:div|span|a)>/i) ||
+      block.match(/title="([^"]+)"/i);
+    const priceMatch = block.match(/class="[^"]*(?:price|offer-pric|selling-price)[^"]*"[^>]*>\s*(₹?[^<]+)/i) ||
+      block.match(/₹\s*([\d,]+)/i);
+    const originalPriceMatch = block.match(/class="[^"]*(?:orginal-price|original-price|was-price|strike)[^"]*"[^>]*>\s*(₹?[^<]+)/i);
+    const imageMatch = block.match(/(?:src|data-src)="([^"]*assets\.ajio\.com[^"]+)"/i) ||
+      block.match(/srcset="([^"]*assets\.ajio\.com[^"\s,]+)/i);
+    const discountMatch = block.match(/(\d+% off)/i);
+    const ratingMatch = block.match(/(\d+(?:\.\d+)?)\s*★/i) || block.match(/rating[^>]*>\s*([\d.]+)/i);
+    const reviewMatch = block.match(/([\d,]+)\s*(?:ratings?|reviews?)/i);
+    const title = titleMatch ? cleanText(titleMatch[1]) : null;
+
+    if (!title || title.length < 4) continue;
+
+    products.push({
+      id: `ajio-html-${products.length + 1}-${Date.now()}`,
+      title: title,
+      price: priceMatch ? normalizePrice(priceMatch[1]) : "Check Site",
+      originalPrice: originalPriceMatch ? normalizePrice(originalPriceMatch[1]) : "N/A",
+      rating: `#${products.length + 1} Popular`,
+      starRating: normalizeRating(ratingMatch ? ratingMatch[1] : ""),
+      reviewCount: normalizeReviewCount(reviewMatch ? reviewMatch[1] : ""),
+      discount: normalizeDiscount(discountMatch ? discountMatch[1] : ""),
+      stockText: "Check site",
+      store: "ajio",
+      image: imageMatch ? normalizeAjioImage(imageMatch[1]) : PRODUCT_PLACEHOLDER,
+      link: link
+    });
+  }
+
+  return products;
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // COMBINED FETCH WITH CACHE
 // ═══════════════════════════════════════════════════════════════════
@@ -549,27 +797,33 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
     }
   }
 
-  // Live scrape (amazon first, 3s gap, then flipkart - stagger = safer)
+  // Live scrape
   try {
-    const [amazonProducts, flipkartProducts, meeshoProducts] = await Promise.all([
+    const [amazonProducts, flipkartProducts, meeshoProducts, ajioProducts] = await Promise.all([
       scrapeAmazonBestSellers(category),
       scrapeFlipkartLive(category),
-      scrapeMeeshoLive(category)
+      scrapeMeeshoLive(category),
+      scrapeAjioLive(category)
     ]);
 
     // Interleave results
     const combined = [];
-    const maxLength = Math.max(amazonProducts.length, flipkartProducts.length, meeshoProducts.length);
+    const maxLength = Math.max(
+      amazonProducts.length,
+      flipkartProducts.length,
+      meeshoProducts.length,
+      ajioProducts.length
+    );
     for (let i = 0; i < maxLength; i++) {
       if (amazonProducts[i]) combined.push(amazonProducts[i]);
       if (flipkartProducts[i]) combined.push(flipkartProducts[i]);
       if (meeshoProducts[i]) combined.push(meeshoProducts[i]);
+      if (ajioProducts[i]) combined.push(ajioProducts[i]);
     }
 
-    // Save to cache + push to DB (DB first, UI reads from DB)
+    // Save to cache
     if (combined.length > 0) {
       await setCachedData(category, combined);
-      await postToBackend(combined, category);
     }
 
     return { status: "success", data: combined, count: combined.length, fromCache: false };
@@ -585,27 +839,23 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 1-MINUTE AUTO-FIRE ALARM (round-robin across all categories)
+// 20-MINUTE AUTO-REFRESH ALARM
 // ═══════════════════════════════════════════════════════════════════
 
 const ALARM_NAME = "trending_refresh";
 
-// MV3 service workers sleep + old alarms persist across code updates,
-// so (re)create the 1-min alarm on EVERY worker start, not just install.
-chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
-
-// Set up 1-minute alarm on extension install/startup (backup paths)
+// Set up 20-minute alarm on extension install/startup
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
-  console.log("TrendingPulse: 1-minute auto-fire alarm created.");
+  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 20 });
+  console.log("TrendingPulse: 20-minute auto-refresh alarm created.");
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
-  console.log("TrendingPulse: 1-minute auto-fire alarm restored on startup.");
+  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 20 });
+  console.log("TrendingPulse: 20-minute auto-refresh alarm restored on startup.");
 });
 
-// When alarm fires: same button-click process, next category each minute
+// When alarm fires, refresh the last-used category (or default)
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     console.log("TrendingPulse: Auto-refresh triggered at", new Date().toLocaleTimeString());
