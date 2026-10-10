@@ -28,7 +28,7 @@ const PLATFORM_TABS = [
 ];
 
 const SORTS = [
-  { value: "trend", label: "🔥 Trend Velocity (Highest)" },
+  { value: "trend", label: "Trend Velocity (Highest)" },
   { value: "reviews", label: "Top Reviews (Highest)" },
   { value: "rating", label: "Top Rating (Highest)" },
   { value: "price-low", label: "Price: Low to High" },

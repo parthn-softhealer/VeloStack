@@ -878,39 +878,47 @@ const ALARM_NAME = "trending_refresh";
 
 // MV3 service workers sleep + old alarms persist across code updates,
 // so (re)create the 1-min alarm on EVERY worker start, not just install.
-chrome.alarms.create(ALARM_NAME, { periodInMinutes: 2 });
+chrome.alarms.create(ALARM_NAME, { delayInMinutes: 0.1, periodInMinutes: 1 });
 
 // Set up 1-minute alarm on extension install/startup (backup paths)
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 2 });
+  chrome.storage.local.set({ lastAlarmStartedAt: 0, alarmRunning: false });
+  chrome.alarms.create(ALARM_NAME, { delayInMinutes: 0.1, periodInMinutes: 1 });
   console.log("TrendingPulse: 1-minute auto-fire alarm created.");
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 2 });
+  chrome.storage.local.set({ lastAlarmStartedAt: 0, alarmRunning: false });
+  chrome.alarms.create(ALARM_NAME, { delayInMinutes: 0.1, periodInMinutes: 1 });
   console.log("TrendingPulse: 1-minute auto-fire alarm restored on startup.");
 });
 
 // When alarm fires: same button-click process, next category each tick
-// (round-robin — otherwise only lastCategory/default ever fills the DB)
+// (round-robin — automatically fetches every category in background!)
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     const keys = Object.keys(CATEGORY_CONFIG);
-    const stored = await chrome.storage.local.get(["catIndex", "alarmRunning"]);
-    if (stored.alarmRunning) {
-      console.log("TrendingPulse: previous cycle still running, skipping tick.");
+    const stored = await chrome.storage.local.get(["catIndex", "lastAlarmStartedAt"]);
+    const now = Date.now();
+
+    // Stale lock guard: if previous cycle was within last 80 seconds, wait for it
+    if (stored.lastAlarmStartedAt && now - stored.lastAlarmStartedAt < 80 * 1000) {
+      console.log("TrendingPulse: previous cycle still active, skipping tick.");
       return;
     }
+
     const idx = (stored.catIndex || 0) % keys.length;
     const category = keys[idx];
-    await chrome.storage.local.set({ alarmRunning: true });
+    await chrome.storage.local.set({ lastAlarmStartedAt: now });
+
     try {
       console.log(`TrendingPulse: auto-fire [${idx + 1}/${keys.length}] "${category}"`);
       const response = await fetchTrendingProducts(category, true);
       console.log(`TrendingPulse: auto-fire done — ${response.count} products updated.`);
-      await chrome.storage.local.set({ catIndex: idx + 1, lastCategory: category });
-    } finally {
-      await chrome.storage.local.set({ alarmRunning: false });
+      await chrome.storage.local.set({ catIndex: idx + 1, lastCategory: category, lastAlarmStartedAt: 0 });
+    } catch (err) {
+      console.error("Auto-fire error:", err);
+      await chrome.storage.local.set({ lastAlarmStartedAt: 0 });
     }
   }
 });

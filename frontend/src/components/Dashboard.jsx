@@ -89,12 +89,35 @@ function StatCard({ value, label }) {
   );
 }
 
+function calculateTrendScore(item) {
+  if (!item) return 0;
+  let velocityPct = 0;
+  if (Array.isArray(item.reviewHistory) && item.reviewHistory.length >= 2) {
+    const first = num(item.reviewHistory[0]?.reviewCount);
+    const last = num(item.reviewHistory[item.reviewHistory.length - 1]?.reviewCount);
+    if (first > 0 && last >= first) {
+      velocityPct = ((last - first) / first) * 100;
+    }
+  }
+
+  const reviews = num(item.reviewCount);
+  const rating = num(item.rating, 3.8);
+
+  if (velocityPct > 0) {
+    return velocityPct * 100 + Math.log10(reviews + 10) * 20 + rating * 10;
+  }
+
+  return Math.log10(reviews + 1) * Math.pow(rating, 2);
+}
+
 function HorizontalBars({ items }) {
-  const max = Math.max(...items.map((item) => Math.sqrt(num(item.reviewCount))), 1);
+  const scores = items.map((item) => calculateTrendScore(item));
+  const maxScore = Math.max(...scores, 1);
   return (
     <div className="dashboard-bar-list">
       {items.map((item, index) => {
-        const width = Math.max(6, (Math.sqrt(num(item.reviewCount)) / max) * 100);
+        const score = calculateTrendScore(item);
+        const width = Math.max(8, (score / maxScore) * 100);
         return (
           <div className="dashboard-bar-row" key={item.id || `${item.title}-${index}`}>
             <span className="dashboard-bar-label">#{index + 1} {truncate(item.title)}</span>
@@ -102,7 +125,7 @@ function HorizontalBars({ items }) {
               <span className="dashboard-bar-fill" style={{ width: `${width}%` }} />
             </span>
             <span className="dashboard-bar-value">
-              {formatCompact(item.reviewCount)} · {formatCurrency(num(item.price))}
+              {score.toFixed(1)} pts · {formatCurrency(num(item.price))}
             </span>
           </div>
         );
@@ -247,7 +270,7 @@ export default function Dashboard({
     const categoryColor = new Map(categoryNames.map((name, index) => [name, CATEGORY_COLORS[index % CATEGORY_COLORS.length]]));
 
     const topProducts = [...filtered]
-      .sort((a, b) => num(b.reviewCount) - num(a.reviewCount))
+      .sort((a, b) => calculateTrendScore(b) - calculateTrendScore(a))
       .slice(0, 10);
 
     const priceBands = PRICE_FILTERS.slice(1).map((filter) => ({
@@ -374,8 +397,8 @@ export default function Dashboard({
           <div className="dashboard-grid two-col">
             <article className="dashboard-card">
               <div className="dashboard-card-heading">
-                <h3>Top 10 best sellers right now</h3>
-                <p>Bar length follows customer rating count with a square-root scale.</p>
+                <h3>Top 10 by Trend Factor</h3>
+                <p>Ranked by real-time trend velocity, demand momentum, and rating quality.</p>
               </div>
               <HorizontalBars items={dashboard.topProducts} />
             </article>
