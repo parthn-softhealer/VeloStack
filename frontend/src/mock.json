@@ -1,0 +1,170 @@
+{
+  "categories": {
+    "canonical": [
+      "Kurti Sets",
+      "LED Lights",
+      "Kitchen Gadgets",
+      "Jewellery",
+      "Men's T-Shirts",
+      "Beauty Electronics"
+    ],
+    "platforms": {
+      "amazon": [
+        "Women's Kurtis",
+        "LED Strip Lights",
+        "Kitchen Storage"
+      ],
+      "flipkart": [
+        "Portable Blenders",
+        "Home & Kitchen Appliances"
+      ],
+      "meesho": [
+        "Artificial Jewellery",
+        "Jhumka Earrings",
+        "Women Ethnic Wear"
+      ],
+      "ajio": [
+        "Men's Oversized T-Shirts",
+        "Streetwear"
+      ],
+      "1688": [
+        "LED Makeup Mirror",
+        "Bluetooth Beauty Devices"
+      ]
+    }
+  },
+  "listings": [
+    {
+      "id": "amz-001",
+      "platform": "amazon",
+      "title": "Women's Cotton Blend Anarkali Kurti Set with Dupatta (Pack of 1)",
+      "price": 799,
+      "mrp": 1999,
+      "currency": "₹",
+      "rating": 4.2,
+      "reviewCount": 12438,
+      "seller": "FabStyle Apparel",
+      "image": null,
+      "canonical": "Kurti Sets",
+      "rawCategory": "Women's Kurtis",
+      "reviewHistory": [
+        {
+          "date": "2026-10-01",
+          "reviewCount": 12102
+        }
+      ],
+      "sample": true,
+      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+    },
+    {
+      "id": "amz-002",
+      "platform": "amazon",
+      "title": "USB LED Strip Lights 5M RGB 5050 with Remote Control for Home Decor",
+      "price": 499,
+      "mrp": 1299,
+      "currency": "₹",
+      "rating": 4.3,
+      "reviewCount": 45210,
+      "seller": "BrightHome India",
+      "image": null,
+      "canonical": "LED Lights",
+      "rawCategory": "LED Strip Lights",
+      "reviewHistory": [
+        {
+          "date": "2026-10-01",
+          "reviewCount": 44890
+        }
+      ],
+      "sample": true,
+      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+    },
+    {
+      "id": "fk-001",
+      "platform": "flipkart",
+      "title": "Portable Mini Blender USB Rechargeable Juicer for Fruits & Shakes (380ml)",
+      "price": 899,
+      "mrp": 1999,
+      "currency": "₹",
+      "rating": 4.1,
+      "reviewCount": 8932,
+      "seller": "KitchenKart",
+      "image": null,
+      "canonical": "Kitchen Gadgets",
+      "rawCategory": "Portable Blenders",
+      "reviewHistory": [
+        {
+          "date": "2026-10-01",
+          "reviewCount": 8755
+        }
+      ],
+      "sample": true,
+      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+    },
+    {
+      "id": "me-001",
+      "platform": "meesho",
+      "title": "Stylish Gold-Plated Jhumka Earrings for Women (Pack of 2)",
+      "price": 149,
+      "mrp": 499,
+      "currency": "₹",
+      "rating": 4.0,
+      "reviewCount": 23540,
+      "seller": "Shine Jewels",
+      "image": null,
+      "canonical": "Jewellery",
+      "rawCategory": "Jhumka Earrings",
+      "reviewHistory": [
+        {
+          "date": "2026-10-01",
+          "reviewCount": 23110
+        }
+      ],
+      "sample": true,
+      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+    },
+    {
+      "id": "aj-001",
+      "platform": "ajio",
+      "title": "Men's Oversized Cotton Streetwear T-Shirt - Drop Shoulder Fit",
+      "price": 399,
+      "mrp": 999,
+      "currency": "₹",
+      "rating": 4.4,
+      "reviewCount": 5214,
+      "seller": "UrbanThread",
+      "image": null,
+      "canonical": "Men's T-Shirts",
+      "rawCategory": "Men's Oversized T-Shirts",
+      "reviewHistory": [
+        {
+          "date": "2026-10-01",
+          "reviewCount": 4980
+        }
+      ],
+      "sample": true,
+      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+    },
+    {
+      "id": "1688-001",
+      "platform": "1688",
+      "title": "Cross-Border LED Makeup Mirror with Bluetooth Speaker & Touch Control",
+      "price": 38.5,
+      "mrp": 89.9,
+      "currency": "¥",
+      "rating": 4.6,
+      "reviewCount": 3120,
+      "seller": "Guangzhou Beauty Supply",
+      "image": null,
+      "canonical": "Beauty Electronics",
+      "rawCategory": "LED Makeup Mirror",
+      "reviewHistory": [
+        {
+          "date": "2026-10-01",
+          "reviewCount": 3050
+        }
+      ],
+      "sample": true,
+      "_note": "SAMPLE fallback row - shown only when backend unreachable"
+    }
+  ]
+}

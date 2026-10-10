@@ -1,0 +1,8 @@
+# -*- coding: utf-8 -*-
+fastapi>=0.100,<1
+uvicorn[standard]>=0.22
+psycopg2-binary>=2.9
+curl-cffi>=0.5
+beautifulsoup4>=4.12
+lxml>=4.9
+playwright>=1.40
