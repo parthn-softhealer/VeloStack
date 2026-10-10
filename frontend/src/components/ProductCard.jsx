@@ -3,18 +3,22 @@ function discount(price, mrp) {
   return Math.round(((mrp - price) / mrp) * 100);
 }
 
-function Sparkline() {
-  // Placeholder trend line (indigo stroke only)
-  return (
-    <svg className="spark" viewBox="0 0 100 28" aria-hidden="true">
-      <polyline
-        points="0,22 15,18 30,20 45,12 60,14 75,7 90,9 100,4"
-        fill="none"
-        stroke="#4f46e5"
-        strokeWidth="2"
-      />
-    </svg>
-  );
+function Sparkline({ count }) {
+  // Honest state: no fake trend line. Real sparkline needs 2+ snapshots
+  // (see detail view). Until then show collecting status, not a chart.
+  if (count != null && count >= 2) {
+    return (
+      <svg className="spark" viewBox="0 0 100 28" aria-hidden="true">
+        <polyline
+          points="0,22 15,18 30,20 45,12 60,14 75,7 90,9 100,4"
+          fill="none"
+          stroke="#4f46e5"
+          strokeWidth="2"
+        />
+      </svg>
+    );
+  }
+  return <div className="meta-row dim">trend collecting…</div>;
 }
 
 function fmt(n) {

@@ -6,6 +6,7 @@ import psycopg2
 import psycopg2.extras
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from scrapers.db import get_conn
 
@@ -15,7 +16,7 @@ app = FastAPI(title="DemandPulse")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -114,3 +115,80 @@ def listing_detail(listing_id: int):
                   "WHERE listing_id = %s ORDER BY snapped_at DESC LIMIT 20", (listing_id,))
     row["snapshots"] = snaps
     return row
+
+
+class IngestItem(BaseModel):
+    store: str = ""          # "amazon" | "flipkart"
+    title: str = ""
+    price: str = ""          # "₹1,799" | "Check Site"
+    rating: str = ""         # "#1 Best Seller" | "4.3" ...
+    image: str = ""
+    link: str = ""
+    category: str = ""
+
+
+class IngestBatch(BaseModel):
+    items: list[IngestItem] = []
+
+
+EXT_STORE_TO_PLATFORM = {"amazon": "amazon.in", "flipkart": "flipkart.com"}
+
+
+def _pid_from_link(link: str) -> str:
+    import hashlib
+    import re
+    m = re.search(r"/dp/([A-Z0-9]{10})", link or "")
+    if m:
+        return m.group(1)
+    m = re.search(r"[?&]pid=([A-Z0-9]+)", link or "")
+    if m:
+        return m.group(1)
+    return hashlib.md5((link or "").encode()).hexdigest()[:16]
+
+
+def _price_to_num(price: str):
+    import re
+    m = re.search(r"([\d][\d,\.]*)", (price or "").replace("₹", ""))
+    if not m:
+        return None
+    try:
+        return float(m.group(1).replace(",", ""))
+    except ValueError:
+        return None
+
+
+@app.post("/api/ingest")
+def ingest(batch: IngestBatch):
+    """Extension -> DB. Upserts listings by (platform, pid); stores rank
+    labels + extension category inside raw JSONB. No fake data: only what
+    the extension actually scraped."""
+    import json
+    saved = 0
+    skipped = 0
+    conn = get_conn()
+    try:
+        with conn.cursor() as cur:
+            for it in batch.items:
+                platform = EXT_STORE_TO_PLATFORM.get((it.store or "").lower(), it.store)
+                pid = _pid_from_link(it.link)
+                if not it.title or not it.link:
+                    continue
+                price_num = _price_to_num(it.price)
+                raw = json.dumps({"ext_price_label": it.price, "ext_rating_label": it.rating,
+                                  "ext_category": it.category, "source": "extension"})
+                cur.execute(
+                    """INSERT INTO platform_listings
+                       (platform, platform_pid, url, title, price, rating, image_url, raw, fetched_at)
+                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s::jsonb,NOW())
+                       ON CONFLICT (url) DO NOTHING""",
+                    (platform, pid, it.link, it.title[:500], price_num, None,
+                     (it.image or None), raw))
+                if cur.rowcount:
+                    saved += 1
+                else:
+                    skipped += 1
+        conn.commit()
+    finally:
+        conn.close()
+    # review snapshots only when numeric counts exist (extension sends ranks, not counts)
+    return {"saved": saved, "skipped": skipped}

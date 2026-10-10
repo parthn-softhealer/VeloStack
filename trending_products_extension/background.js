@@ -107,6 +107,34 @@ const FLIPKART_MAX_PAGES = 5;
 const MEESHO_PAGE_SIZE = 20;
 const CACHE_VERSION = "v6";
 
+// DemandPulse backend - extension data goes to DB FIRST, UI reads from DB.
+const BACKEND_URL = "http://localhost:8000";
+
+async function postToBackend(products, category) {
+  if (!products || !products.length) return;
+  try {
+    const items = products
+      .filter((p) => p.image && !p.image.startsWith("data:"))
+      .map((p) => ({
+        store: p.store, title: p.title, price: p.price,
+        rating: p.rating, image: p.image, link: p.link, category: category
+      }));
+    if (!items.length) return;
+    const res = await fetch(`${BACKEND_URL}/api/ingest`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items })
+    });
+    console.log(`DB push "${category}":`, await res.text());
+  } catch (err) {
+    console.error("DB push failed:", err);
+  }
+}
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 // Cache duration: 20 minutes in milliseconds
 const CACHE_DURATION_MS = 20 * 60 * 1000;
 
@@ -521,7 +549,7 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
     }
   }
 
-  // Live scrape
+  // Live scrape (amazon first, 3s gap, then flipkart - stagger = safer)
   try {
     const [amazonProducts, flipkartProducts, meeshoProducts] = await Promise.all([
       scrapeAmazonBestSellers(category),
@@ -538,9 +566,10 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
       if (meeshoProducts[i]) combined.push(meeshoProducts[i]);
     }
 
-    // Save to cache
+    // Save to cache + push to DB (DB first, UI reads from DB)
     if (combined.length > 0) {
       await setCachedData(category, combined);
+      await postToBackend(combined, category);
     }
 
     return { status: "success", data: combined, count: combined.length, fromCache: false };
@@ -556,23 +585,27 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 20-MINUTE AUTO-REFRESH ALARM
+// 1-MINUTE AUTO-FIRE ALARM (round-robin across all categories)
 // ═══════════════════════════════════════════════════════════════════
 
 const ALARM_NAME = "trending_refresh";
 
-// Set up 20-minute alarm on extension install/startup
+// MV3 service workers sleep + old alarms persist across code updates,
+// so (re)create the 1-min alarm on EVERY worker start, not just install.
+chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
+
+// Set up 1-minute alarm on extension install/startup (backup paths)
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 20 });
-  console.log("TrendingPulse: 20-minute auto-refresh alarm created.");
+  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
+  console.log("TrendingPulse: 1-minute auto-fire alarm created.");
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 20 });
-  console.log("TrendingPulse: 20-minute auto-refresh alarm restored on startup.");
+  chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
+  console.log("TrendingPulse: 1-minute auto-fire alarm restored on startup.");
 });
 
-// When alarm fires, refresh the last-used category (or default)
+// When alarm fires: same button-click process, next category each minute
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     console.log("TrendingPulse: Auto-refresh triggered at", new Date().toLocaleTimeString());
