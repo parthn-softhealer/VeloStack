@@ -35,7 +35,7 @@ const SORTS = [
   { value: "price-high", label: "Price: High to Low" },
 ];
 
-const INITIAL_LISTING_LIMIT = 10000;
+const INITIAL_LISTING_LIMIT = 5000;
 
 function num(v, fallback = 0) {
   const n = Number(v);

@@ -161,12 +161,16 @@ export async function fetchListings({ platform, canonical, limit } = {}) {
     const backendPlatform = toBackendPlatform(platform);
     if (backendPlatform) q.set("platform", backendPlatform);
     if (canonical && canonical !== "all") q.set("canonical", canonical);
-    if (limit) q.set("limit", String(limit));
+    if (limit) {
+      const safeLimit = Math.min(Number(limit) || 2000, 5000);
+      q.set("limit", String(safeLimit));
+    }
     const suffix = q.toString() ? `?${q.toString()}` : "";
     const data = await getJSON(`/api/listings${suffix}`);
     const items = Array.isArray(data) ? data : data.items || [];
     return items.map(normalizeListing);
-  } catch {
+  } catch (err) {
+    console.error("fetchListings error, falling back to mock:", err);
     // Backend unreachable -> mock fallback only.
     return filterListings(mock.listings, { platform, canonical, limit });
   }
