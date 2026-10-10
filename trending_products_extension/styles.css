@@ -8,6 +8,7 @@
   --accent-indigo: #6366f1;
   --amazon-orange: #ff9900;
   --flipkart-blue: #2874f0;
+  --meesho-pink: #9f2089;
   --border-color: #334155;
   --radius: 12px;
 }
@@ -138,11 +139,11 @@ body {
 
 .tab-btn {
   flex: 1;
-  padding: 6px 10px;
+  padding: 6px 7px;
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
   border-radius: 7px;
   cursor: pointer;
@@ -234,8 +235,8 @@ body {
 .product-details {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   flex-grow: 1;
+  min-width: 0;
 }
 
 .product-title {
@@ -253,8 +254,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 6px;
+  margin-top: 7px;
   gap: 8px;
+}
+
+.price-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .product-price {
@@ -264,12 +272,53 @@ body {
   white-space: nowrap;
 }
 
+.original-price {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  white-space: nowrap;
+}
+
 .product-badges {
   display: flex;
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.product-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px 8px;
+  margin-top: 7px;
+}
+
+.product-stat {
+  min-width: 0;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-label {
+  color: #cbd5e1;
+  font-weight: 600;
+  margin-right: 3px;
+}
+
+.stat-value {
+  color: var(--text-muted);
+}
+
+.product-link-text {
+  display: inline-flex;
+  margin-top: 6px;
+  color: var(--accent-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .store-tag {
@@ -290,6 +339,12 @@ body {
   background: rgba(40, 116, 240, 0.2);
   color: #60a5fa;
   border: 1px solid rgba(40, 116, 240, 0.4);
+}
+
+.store-tag.meesho {
+  background: rgba(159, 32, 137, 0.2);
+  color: #f472d0;
+  border: 1px solid rgba(159, 32, 137, 0.45);
 }
 
 .rating {

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Trending Products Finder (Amazon & Flipkart)",
+  "name": "Trending Products Finder (Amazon, Flipkart & Meesho)",
   "version": "2.0",
-  "description": "Find trending products across ALL categories on Amazon & Flipkart with auto-refresh.",
+  "description": "Find trending products across ALL categories on Amazon, Flipkart & Meesho with auto-refresh.",
   "permissions": [
     "activeTab",
     "storage",
@@ -10,7 +10,8 @@
   ],
   "host_permissions": [
     "https://www.amazon.in/*",
-    "https://www.flipkart.com/*"
+    "https://www.flipkart.com/*",
+    "https://www.meesho.com/*"
   ],
   "action": {
     "default_popup": "popup.html",

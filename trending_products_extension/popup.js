@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fetch Live Data from Service Worker
   function loadLiveCategoryData(categoryQuery) {
-    showLoading(true, `Scraping live trending ${categoryQuery} from Amazon & Flipkart...`);
+    showLoading(true, `Scraping live trending ${categoryQuery} from Amazon, Flipkart & Meesho...`);
 
     chrome.runtime.sendMessage(
       { action: "getTrendingProducts", category: categoryQuery },
@@ -85,8 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
       card.rel = "noopener noreferrer";
       card.title = product.title;
 
-      const storeClass = product.store === "amazon" ? "amazon" : "flipkart";
-      const storeName = product.store === "amazon" ? "Amazon" : "Flipkart";
+      const storeDetails = {
+        amazon: "Amazon",
+        flipkart: "Flipkart",
+        meesho: "Meesho"
+      };
+      const storeClass = product.store || "amazon";
+      const storeName = storeDetails[storeClass] || "Store";
 
       const image = document.createElement("img");
       image.src = product.image || productPlaceholder;
@@ -106,9 +111,51 @@ document.addEventListener("DOMContentLoaded", () => {
       const meta = document.createElement("div");
       meta.className = "product-meta";
 
+      const priceGroup = document.createElement("div");
+      priceGroup.className = "price-group";
+
       const price = document.createElement("span");
       price.className = "product-price";
       price.textContent = product.price;
+
+      const originalPrice = document.createElement("span");
+      originalPrice.className = "original-price";
+      originalPrice.textContent = product.originalPrice || "N/A";
+
+      priceGroup.appendChild(price);
+      if (product.originalPrice && product.originalPrice !== "N/A" && product.originalPrice !== product.price) {
+        priceGroup.appendChild(originalPrice);
+      }
+
+      const productStats = document.createElement("div");
+      productStats.className = "product-stats";
+
+      const stats = [
+        ["Stars", product.starRating || "N/A"],
+        ["Reviews", product.reviewCount || "N/A"],
+        ["Discount", product.discount || "N/A"],
+        ["Stock", product.stockText || "Check site"]
+      ];
+
+      stats.forEach(([label, value]) => {
+        const stat = document.createElement("span");
+        stat.className = "product-stat";
+
+        const statLabel = document.createElement("span");
+        statLabel.className = "stat-label";
+        statLabel.textContent = `${label}:`;
+
+        const statValue = document.createElement("span");
+        statValue.className = "stat-value";
+        statValue.textContent = value;
+
+        stat.append(statLabel, statValue);
+        productStats.appendChild(stat);
+      });
+
+      const linkText = document.createElement("span");
+      linkText.className = "product-link-text";
+      linkText.textContent = "Open product";
 
       const badges = document.createElement("div");
       badges.className = "product-badges";
@@ -122,8 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
       storeTag.textContent = storeName;
 
       badges.append(rating, storeTag);
-      meta.append(price, badges);
-      details.append(title, meta);
+      meta.append(priceGroup, badges);
+      details.append(title, productStats, meta, linkText);
       card.append(image, details);
 
       productsGrid.appendChild(card);
