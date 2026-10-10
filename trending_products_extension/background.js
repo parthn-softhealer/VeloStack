@@ -852,9 +852,10 @@ async function fetchTrendingProducts(category, forceRefresh = false) {
       if (ajioProducts[i]) combined.push(ajioProducts[i]);
     }
 
-    // Save to cache
+    // Save to cache + push to DB (DB first, UI reads from DB)
     if (combined.length > 0) {
       await setCachedData(category, combined);
+      await postToBackend(combined, category);
     }
 
     return { status: "success", data: combined, count: combined.length, fromCache: false };
