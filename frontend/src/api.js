@@ -80,6 +80,18 @@ function normalizeListing(row) {
   if (!("title" in row) || "image" in row) return row;
   // Backend platform_listings row -> frontend card shape.
   const snapshots = Array.isArray(row.snapshots) ? row.snapshots : [];
+
+  let rawObj = {};
+  if (row.raw && typeof row.raw === "object") {
+    rawObj = row.raw;
+  } else if (typeof row.raw === "string") {
+    try {
+      rawObj = JSON.parse(row.raw);
+    } catch {}
+  }
+
+  const extCat = row.ext_category || rawObj.ext_category || rawObj.category || null;
+
   return {
     id: row.id,
     platform: row.platform,
@@ -92,9 +104,13 @@ function normalizeListing(row) {
     seller: row.seller || "—",
     image: row.image_url ?? null,
     image_url: row.image_url ?? null,
-    canonical: row.canonical ?? null,
-    rawCategory: row.raw_category ?? null,
-    extCategory: row.ext_category ?? null,
+    url: row.url || row.link || null,
+    link: row.url || row.link || null,
+    fetchedAt: row.fetched_at || row.updated_at || row.date || null,
+    updatedAt: row.fetched_at || row.updated_at || row.date || null,
+    canonical: row.canonical || rawObj.canonical || null,
+    rawCategory: row.raw_category || extCat || null,
+    extCategory: extCat,
     reviewHistory: snapshots.map((s) => ({
       date: String(s.snapped_at || "").slice(0, 10),
       reviewCount: s.review_count ?? 0,

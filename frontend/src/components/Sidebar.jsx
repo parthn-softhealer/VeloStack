@@ -1,4 +1,5 @@
-import { MAIN_CATEGORIES, matchesMainCategory } from "../categories.js";
+import { MAIN_CATEGORIES } from "../categories.js";
+import { matchesCategory } from "../api.js";
 import { TrendingIcon, CategoryMapIcon, DashboardIcon, BoltIcon } from "./Icons.jsx";
 
 function getCategoryIcon(icon) {
@@ -207,7 +208,7 @@ export default function Sidebar({
     if (cat.id === "all") {
       acc[cat.id] = listings.length;
     } else {
-      acc[cat.id] = listings.filter((item) => matchesMainCategory(item, cat.id)).length;
+      acc[cat.id] = listings.filter((item) => matchesCategory(item, cat.id)).length;
     }
     return acc;
   }, {});

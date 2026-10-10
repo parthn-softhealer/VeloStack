@@ -1,4 +1,4 @@
-import { PhotoIcon, BoltIcon, StarIcon } from "./Icons.jsx";
+import { PhotoIcon, BoltIcon, StarIcon, ExternalLinkIcon, ClockIcon } from "./Icons.jsx";
 
 function discount(price, mrp) {
   if (mrp == null || price == null || mrp <= price) return null;
@@ -10,19 +10,62 @@ function fmt(n) {
   return Number(n).toLocaleString("en-IN");
 }
 
-function getVelocity(history = []) {
-  if (!history || history.length < 2) return null;
-  const first = history[0].reviewCount;
-  const last = history[history.length - 1].reviewCount;
-  if (!first || !last || last <= first) return null;
-  const growth = ((last - first) / first) * 100;
-  return growth > 0 ? growth.toFixed(1) : null;
+function getVelocity(item) {
+  if (!item) return null;
+  const history = item.reviewHistory || [];
+  if (history.length >= 2) {
+    const first = Number(history[0].reviewCount);
+    const last = Number(history[history.length - 1].reviewCount);
+    if (first > 0 && last > first) {
+      const growth = ((last - first) / first) * 100;
+      if (growth > 0) return `+${growth.toFixed(1)}%`;
+    }
+  }
+  if (Number(item.reviewCount) >= 5000 && (item.rating == null || Number(item.rating) >= 3.8)) {
+    return "Surging";
+  }
+  return null;
+}
+
+function getProductUrl(item) {
+  if (!item) return "#";
+  const rawUrl = item.url || item.link;
+  if (rawUrl && typeof rawUrl === "string" && rawUrl.startsWith("http")) {
+    return rawUrl;
+  }
+  const plat = String(item.platform || "").toLowerCase();
+  const q = encodeURIComponent(item.title || "product");
+  if (plat.includes("amazon")) return `https://www.amazon.in/s?k=${q}`;
+  if (plat.includes("flipkart")) return `https://www.flipkart.com/search?q=${q}`;
+  if (plat.includes("meesho")) return `https://www.meesho.com/search?q=${q}`;
+  if (plat.includes("ajio")) return `https://www.ajio.com/search/?text=${q}`;
+  return `https://www.google.com/search?q=${q}`;
+}
+
+function formatLastUpdated(dateStr) {
+  if (!dateStr) return "Just now";
+  try {
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return String(dateStr);
+    return d.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return String(dateStr);
+  }
 }
 
 export default function ProductCard({ item, onOpen, onPreviewImage }) {
   const off = discount(item.price, item.mrp);
   const img = item.image ?? item.image_url ?? null;
-  const velocity = getVelocity(item.reviewHistory);
+  const velocity = getVelocity(item);
+  const productUrl = getProductUrl(item);
+  const lastUpdated = formatLastUpdated(item.fetchedAt || item.updatedAt);
 
   function handleCornerExpandClick(e) {
     e.stopPropagation();
@@ -37,14 +80,27 @@ export default function ProductCard({ item, onOpen, onPreviewImage }) {
     }
   }
 
+  function handleCardClick(e) {
+    // If user clicked corner expand button, let that open image modal
+    if (e.target.closest(".img-corner-expand-btn")) return;
+    
+    // Redirect directly to the product on the marketplace
+    if (productUrl && productUrl !== "#") {
+      window.open(productUrl, "_blank", "noopener,noreferrer");
+    } else if (onOpen) {
+      onOpen(item.id);
+    }
+  }
+
   return (
     <article
       className="card product"
-      onClick={() => onOpen(item.id)}
-      role="button"
+      onClick={handleCardClick}
+      role="link"
       tabIndex={0}
+      title={`Click to open product on ${item.platform || "marketplace"}`}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onOpen(item.id);
+        if (e.key === "Enter" || e.key === " ") handleCardClick(e);
       }}
     >
       <div className="img-wrap">
@@ -88,8 +144,8 @@ export default function ProductCard({ item, onOpen, onPreviewImage }) {
             {item.platform}
           </span>
           {velocity && (
-            <span className="velocity-chip" title="Review growth velocity">
-              <BoltIcon size={12} className="inline-bolt-icon" /> +{velocity}%
+            <span className="velocity-chip" title="Demand & review velocity">
+              <BoltIcon size={12} className="inline-bolt-icon" /> {velocity}
             </span>
           )}
         </div>
@@ -129,6 +185,25 @@ export default function ProductCard({ item, onOpen, onPreviewImage }) {
 
         <div className="seller-row">
           <span className="seller-name">by {item.seller || "Verified Seller"}</span>
+        </div>
+
+        {/* Last Update from Database & Direct Store Link */}
+        <div className="product-footer-bar">
+          <div className="last-update-badge" title="Timestamp from database">
+            <ClockIcon size={12} className="inline-clock-svg" />
+            <span>Last Update : {lastUpdated}</span>
+          </div>
+          <a
+            href={productUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="direct-store-link"
+            onClick={(e) => e.stopPropagation()}
+            title={`Open product directly on ${item.platform}`}
+          >
+            <span>Open</span>
+            <ExternalLinkIcon size={11} />
+          </a>
         </div>
       </div>
     </article>

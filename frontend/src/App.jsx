@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   fetchCategories,
   fetchListings,
@@ -16,7 +16,7 @@ import Dashboard from "./components/Dashboard.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 import Pagination from "./components/Pagination.jsx";
-import { SearchIcon, EmptyBoxIcon, SunIcon, MoonIcon } from "./components/Icons.jsx";
+import { SearchIcon, EmptyBoxIcon, SunIcon, MoonIcon, RefreshIcon } from "./components/Icons.jsx";
 
 const PLATFORM_TABS = [
   { value: "all", label: "All Platforms" },
@@ -28,6 +28,7 @@ const PLATFORM_TABS = [
 ];
 
 const SORTS = [
+  { value: "trend", label: "🔥 Trend Velocity (Highest)" },
   { value: "reviews", label: "Top Reviews (Highest)" },
   { value: "rating", label: "Top Rating (Highest)" },
   { value: "price-low", label: "Price: Low to High" },
@@ -41,14 +42,36 @@ function num(v, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function calculateTrendScore(item) {
+  if (!item) return 0;
+  let velocityPct = 0;
+  if (Array.isArray(item.reviewHistory) && item.reviewHistory.length >= 2) {
+    const first = num(item.reviewHistory[0]?.reviewCount);
+    const last = num(item.reviewHistory[item.reviewHistory.length - 1]?.reviewCount);
+    if (first > 0 && last >= first) {
+      velocityPct = ((last - first) / first) * 100;
+    }
+  }
+
+  const reviews = num(item.reviewCount);
+  const rating = num(item.rating, 3.8);
+
+  if (velocityPct > 0) {
+    return velocityPct * 100 + Math.log10(reviews + 10) * 20 + rating * 10;
+  }
+
+  return Math.log10(reviews + 1) * Math.pow(rating, 2);
+}
+
 export default function App() {
   const [view, setView] = useState("products");
   const [platform, setPlatform] = useState("all");
   const [category, setCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sort, setSort] = useState("reviews");
+  const [sort, setSort] = useState("trend");
   const [categories, setCategories] = useState(null);
   const [listings, setListings] = useState([]);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [previewImage, setPreviewImage] = useState(null);
@@ -73,7 +96,7 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", theme);
     try {
       localStorage.setItem("demandpulse_theme", theme);
-    } catch { }
+    } catch {}
   }, [theme]);
 
   function toggleTheme() {
@@ -99,29 +122,54 @@ export default function App() {
       const next = !prev;
       try {
         localStorage.setItem("demandpulse_sidebar_collapsed", String(next));
-      } catch { }
+      } catch {}
       return next;
     });
   }
 
-  useEffect(() => {
-    let alive = true;
-    Promise.all([fetchCategories(), fetchListings({ limit: INITIAL_LISTING_LIMIT })])
-      .then(([cats, items]) => {
-        if (!alive) return;
-        setCategories(cats);
+  const refreshData = useCallback(async (silent = false) => {
+    if (!silent) setIsSyncing(true);
+    try {
+      const [cats, items] = await Promise.all([
+        fetchCategories(),
+        fetchListings({ limit: INITIAL_LISTING_LIMIT }),
+      ]);
+      if (cats) setCategories(cats);
+      if (items && Array.isArray(items) && items.length > 0) {
         setListings(items);
-      })
-      .catch(() => {
-        if (!alive) return;
-        setCategories({ canonical: [], platforms: {} });
-        setListings([]);
-      })
-      .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
+      }
+    } catch {
+      // keep existing state on network hiccup
+    } finally {
+      if (!silent) setIsSyncing(false);
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // Initial fetch
+    refreshData(false);
+
+    // Live auto-polling every 5 seconds so newly scraped items appear without reloading!
+    const timer = setInterval(() => {
+      refreshData(true);
+    }, 5000);
+
+    // Instant refresh when user switches back from extension popup to this tab
+    function handleVisibility() {
+      if (!document.hidden) {
+        refreshData(true);
+      }
+    }
+    window.addEventListener("focus", handleVisibility);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", handleVisibility);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [refreshData]);
 
   const platformKey = toBackendPlatform(platform) || platform;
 
@@ -159,6 +207,9 @@ export default function App() {
       );
     }
     switch (sort) {
+      case "trend":
+        out.sort((a, b) => calculateTrendScore(b) - calculateTrendScore(a));
+        break;
       case "price-low":
         out.sort((a, b) => num(a.price) - num(b.price));
         break;
@@ -168,8 +219,11 @@ export default function App() {
       case "rating":
         out.sort((a, b) => num(b.rating, -1) - num(a.rating, -1));
         break;
-      default:
+      case "reviews":
         out.sort((a, b) => num(b.reviewCount) - num(a.reviewCount));
+        break;
+      default:
+        out.sort((a, b) => calculateTrendScore(b) - calculateTrendScore(a));
     }
     return out;
   }, [listings, platform, category, searchQuery, sort]);
@@ -274,6 +328,16 @@ export default function App() {
               <span className="live-pulse" />
               <span>5 Marketplaces Online</span>
             </div>
+            <button
+              type="button"
+              className={`live-sync-btn ${isSyncing ? "syncing" : ""}`}
+              onClick={() => refreshData(false)}
+              title="Click to manually sync live trending products"
+              aria-label="Live sync products"
+            >
+              <RefreshIcon size={14} className={isSyncing ? "spin-icon" : ""} />
+              <span>{isSyncing ? "Syncing..." : "Live Sync"}</span>
+            </button>
             <div className="tracked-stats-pill">
               <strong>{listings.length}</strong> items tracked
             </div>

@@ -156,7 +156,7 @@ const AJIO_MAX_PAGES = 3;
 const CACHE_VERSION = "v7";
 
 // DemandPulse backend - extension data goes to DB FIRST, UI reads from DB.
-const BACKEND_URL = "http://192.168.1.66:8000";
+const BACKEND_URL = "http://localhost:8000";
 
 async function postToBackend(products, category) {
   if (!products || !products.length) return;
