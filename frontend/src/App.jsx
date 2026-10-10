@@ -14,6 +14,7 @@ import Tabs from "./components/Tabs.jsx";
 import CategoryView from "./components/CategoryView.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
+import { SearchIcon, EmptyBoxIcon } from "./components/Icons.jsx";
 
 const PLATFORM_TABS = [
   { value: "all", label: "All Platforms" },
@@ -46,6 +47,23 @@ export default function App() {
   const [listings, setListings] = useState([]);
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem("demandpulse_sidebar_collapsed") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  function toggleSidebar() {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("demandpulse_sidebar_collapsed", String(next));
+      } catch {}
+      return next;
+    });
+  }
 
   useEffect(() => {
     let alive = true;
@@ -152,14 +170,31 @@ export default function App() {
           setView(v);
           if (v !== "detail") setDetail(null);
         }}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
       />
 
       {/* Main Workspace Area */}
       <div className="main-workspace">
         {/* Top Navbar */}
         <header className="top-navbar">
-          <div className="search-bar-wrapper">
-            <span className="search-icon">🔍</span>
+          <div className="navbar-left-group">
+            <button
+              type="button"
+              className="nav-sidebar-toggle-btn"
+              onClick={toggleSidebar}
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="9" y1="3" x2="9" y2="21" />
+              </svg>
+            </button>
+            <div className="search-bar-wrapper">
+              <span className="search-icon">
+                <SearchIcon size={16} />
+              </span>
             <input
               type="text"
               className="search-input"
@@ -177,6 +212,7 @@ export default function App() {
                 ✕
               </button>
             )}
+            </div>
           </div>
 
           <div className="top-meta-info">
@@ -306,7 +342,9 @@ export default function App() {
               {/* Products Grid */}
               {visible.length === 0 ? (
                 <div className="empty-state-box">
-                  <span className="empty-icon">📦</span>
+                  <span className="empty-icon">
+                    <EmptyBoxIcon size={46} />
+                  </span>
                   <h3>No matching products found</h3>
                   <p>
                     No items match the selected combination of category and platform.

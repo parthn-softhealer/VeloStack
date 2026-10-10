@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PhotoIcon, InfoIcon } from "./Icons.jsx";
 
 function fmt(n) {
   if (n == null || Number.isNaN(Number(n))) return "—";
@@ -54,7 +55,8 @@ export default function ProductDetail({ item, onBack }) {
               <img className="detail-img" src={img} alt={item.title} />
             ) : (
               <div className="detail-img no-image">
-                <span>📷 No image preview available</span>
+                <PhotoIcon size={32} />
+                <span>No image preview available</span>
               </div>
             )}
             <div className="detail-badges">
@@ -183,7 +185,7 @@ export default function ProductDetail({ item, onBack }) {
 
           {needsMore && (
             <div className="note-box">
-              <span>💡</span>
+              <InfoIcon size={18} />
               <p>
                 Two or more daily snapshots required to compute accurate 7-day review acceleration velocity.
               </p>

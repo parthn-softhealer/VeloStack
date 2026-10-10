@@ -1,3 +1,5 @@
+import { PhotoIcon, BoltIcon } from "./Icons.jsx";
+
 function discount(price, mrp) {
   if (mrp == null || price == null || mrp <= price) return null;
   return Math.round(((mrp - price) / mrp) * 100);
@@ -88,7 +90,9 @@ export default function ProductCard({ item, onOpen }) {
           <img src={img} alt={item.title} loading="lazy" />
         ) : (
           <div className="no-image" role="img" aria-label="No image yet">
-            <span className="no-image-icon">📷</span>
+            <span className="no-image-icon">
+              <PhotoIcon size={28} />
+            </span>
             <span>Awaiting preview</span>
           </div>
         )}
@@ -98,7 +102,7 @@ export default function ProductCard({ item, onOpen }) {
           </span>
           {velocity && (
             <span className="velocity-chip" title="Review growth velocity">
-              ⚡ +{velocity}%
+              <BoltIcon size={12} className="inline-bolt-icon" /> +{velocity}%
             </span>
           )}
         </div>
