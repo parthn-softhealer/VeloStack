@@ -1,7 +1,2 @@
-// Dynamic backend origin: automatically uses current host (localhost or your IP 192.168.1.97) on port 8000
-const host =
-  typeof window !== "undefined" && window.location.hostname
-    ? window.location.hostname
-    : "localhost";
-
-export const API_BASE = `http://${host}:8000`;
+// Live backend server with PostgreSQL database
+export const API_BASE = "http://192.168.1.66:8000";
